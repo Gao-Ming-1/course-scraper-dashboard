@@ -1,976 +1,2058 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SkillsFuture Intelligence Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     /* ── DARK THEME ───────────────────────────────────── */
-    [data-theme="dark"]{
-      --bg:#0d0f14;--surface:#141720;--surface2:#1c2130;--border:#2a3145;
-      --accent:#00e5ff;--accent2:#7c4dff;--accent3:#ff6b35;
-      --success:#00c853;--warning:#ffab00;--danger:#ff1744;
-      --text:#e8eaf0;--text2:#b0b8cc;--muted:#6b7494;
-      --shadow:rgba(0,0,0,.5);--chart-grid:#2a3145;--chart-tick:#6b7494;--chart-label:#e8eaf0;
-    }
-    /* ── LIGHT THEME ──────────────────────────────────── */
-    [data-theme="light"]{
-      --bg:#f0f4f8;--surface:#ffffff;--surface2:#e8eef5;--border:#b8cad8;
-      --accent:#006ea8;--accent2:#4422bb;--accent3:#bb3300;
-      --success:#006825;--warning:#8a5200;--danger:#bb0018;
-      --text:#0d1520;--text2:#2a3a50;--muted:#4a5e72;
-      --shadow:rgba(0,0,0,.1);--chart-grid:#cddae6;--chart-tick:#4a5e72;--chart-label:#0d1520;
+    [data-theme="dark"] {
+      --bg: #0d0f14;
+      --surface: #141720;
+      --surface2: #1c2130;
+      --border: #2a3145;
+      --accent: #00e5ff;
+      --accent2: #7c4dff;
+      --accent3: #ff6b35;
+      --success: #00c853;
+      --warning: #ffab00;
+      --danger: #ff1744;
+      --text: #e8eaf0;
+      --text2: #b0b8cc;
+      --muted: #6b7494;
+      --shadow: rgba(0, 0, 0, .5);
+      --chart-grid: #2a3145;
+      --chart-tick: #6b7494;
+      --chart-label: #e8eaf0;
     }
 
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;transition:background .25s,color .25s}
-    [data-theme="dark"] body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4}
-    .app{position:relative;z-index:1;max-width:1440px;margin:0 auto;padding:0 24px 60px}
+    /* ── LIGHT THEME ──────────────────────────────────── */
+    [data-theme="light"] {
+      --bg: #f0f4f8;
+      --surface: #ffffff;
+      --surface2: #e8eef5;
+      --border: #b8cad8;
+      --accent: #006ea8;
+      --accent2: #4422bb;
+      --accent3: #bb3300;
+      --success: #006825;
+      --warning: #8a5200;
+      --danger: #bb0018;
+      --text: #0d1520;
+      --text2: #2a3a50;
+      --muted: #4a5e72;
+      --shadow: rgba(0, 0, 0, .1);
+      --chart-grid: #cddae6;
+      --chart-tick: #4a5e72;
+      --chart-label: #0d1520;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background .25s, color .25s
+    }
+
+    [data-theme="dark"] body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: .4
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 24px 60px
+    }
 
     /* ── HEADER ─────────────────────────────────────── */
-    header{padding:26px 0 20px;border-bottom:2px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
-    .logo{display:flex;align-items:center;gap:14px}
-    .logo-mark{width:44px;height:44px;background:var(--accent);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-    .logo-mark span{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;color:#000}
-    h1{font-family:'Space Mono',monospace;font-size:clamp(17px,2.2vw,24px);font-weight:700;letter-spacing:-.5px;color:var(--text)}
-    h1 small{font-size:11px;font-weight:400;color:var(--muted);font-family:'DM Sans',sans-serif;display:block;margin-top:3px;letter-spacing:1px;text-transform:uppercase}
-    .header-right{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-    .header-meta{font-size:12px;font-family:'Space Mono',monospace;color:var(--muted);text-align:right;line-height:1.6}
-    .header-meta strong{color:var(--accent)}
+    header {
+      padding: 26px 0 20px;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px
+    }
+
+    .logo-mark {
+      width: 44px;
+      height: 44px;
+      background: var(--accent);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0
+    }
+
+    .logo-mark span {
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: 13px;
+      color: #000
+    }
+
+    h1 {
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(17px, 2.2vw, 24px);
+      font-weight: 700;
+      letter-spacing: -.5px;
+      color: var(--text)
+    }
+
+    h1 small {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      display: block;
+      margin-top: 3px;
+      letter-spacing: 1px;
+      text-transform: uppercase
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap
+    }
+
+    .header-meta {
+      font-size: 12px;
+      font-family: 'Space Mono', monospace;
+      color: var(--muted);
+      text-align: right;
+      line-height: 1.6
+    }
+
+    .header-meta strong {
+      color: var(--accent)
+    }
 
     /* ── THEME TOGGLE ─────────────────────────────────── */
-    .theme-toggle{display:flex;align-items:center;gap:9px;cursor:pointer;padding:8px 16px;border-radius:24px;border:2px solid var(--border);background:var(--surface);transition:all .2s;flex-shrink:0;user-select:none}
-    .theme-toggle:hover{border-color:var(--accent)}
-    .theme-icon{font-size:17px;line-height:1}
-    .toggle-track{width:42px;height:23px;border-radius:12px;background:var(--border);position:relative;transition:background .2s;flex-shrink:0}
-    [data-theme="light"] .toggle-track{background:var(--accent)}
-    .toggle-thumb{position:absolute;top:3px;left:3px;width:17px;height:17px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 4px rgba(0,0,0,.35)}
-    [data-theme="light"] .toggle-thumb{left:22px}
-    .theme-label{font-size:12px;font-family:'Space Mono',monospace;font-weight:700;color:var(--text);white-space:nowrap}
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 24px;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      transition: all .2s;
+      flex-shrink: 0;
+      user-select: none
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--accent)
+    }
+
+    .theme-icon {
+      font-size: 17px;
+      line-height: 1
+    }
+
+    .toggle-track {
+      width: 42px;
+      height: 23px;
+      border-radius: 12px;
+      background: var(--border);
+      position: relative;
+      transition: background .2s;
+      flex-shrink: 0
+    }
+
+    [data-theme="light"] .toggle-track {
+      background: var(--accent)
+    }
+
+    .toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      background: #fff;
+      transition: left .2s;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .35)
+    }
+
+    [data-theme="light"] .toggle-thumb {
+      left: 22px
+    }
+
+    .theme-label {
+      font-size: 12px;
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap
+    }
 
     /* ── LAYOUT ───────────────────────────────────────── */
-    .main-grid{display:grid;grid-template-columns:340px 1fr;gap:24px;margin-top:24px;align-items:start}
-    @media(max-width:900px){.main-grid{grid-template-columns:1fr}}
+    .main-grid {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 24px;
+      margin-top: 24px;
+      align-items: start
+    }
+
+    @media(max-width:900px) {
+      .main-grid {
+        grid-template-columns: 1fr
+      }
+    }
 
     /* ── CARDS ────────────────────────────────────────── */
-    .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 2px 14px var(--shadow);transition:background .25s,border-color .25s}
-    .card-header{padding:15px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--surface2);transition:background .25s}
-    .card-header h2{font-size:13px;font-family:'Space Mono',monospace;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text)}
-    .card-header .icon{width:20px;height:20px;opacity:.8;color:var(--accent);flex-shrink:0}
-    .tag{margin-left:auto;font-size:10px;font-family:'Space Mono',monospace;font-weight:700;padding:3px 10px;border-radius:20px;background:color-mix(in srgb,var(--accent) 15%,transparent);color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}
-    .card-body{padding:20px}
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 14px var(--shadow);
+      transition: background .25s, border-color .25s
+    }
+
+    .card-header {
+      padding: 15px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface2);
+      transition: background .25s
+    }
+
+    .card-header h2 {
+      font-size: 13px;
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text)
+    }
+
+    .card-header .icon {
+      width: 20px;
+      height: 20px;
+      opacity: .8;
+      color: var(--accent);
+      flex-shrink: 0
+    }
+
+    .tag {
+      margin-left: auto;
+      font-size: 10px;
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: color-mix(in srgb, var(--accent) 15%, transparent);
+      color: var(--accent);
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent)
+    }
+
+    .card-body {
+      padding: 20px
+    }
 
     /* ── FORM ─────────────────────────────────────────── */
-    label{display:block;font-size:12px;font-family:'Space Mono',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-weight:700}
-    input[type=text],input[type=number],select{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:8px;color:var(--text);font-family:'Space Mono',monospace;font-size:13px;padding:10px 14px;transition:border-color .2s,background .25s;outline:none}
-    input:focus,select:focus{border-color:var(--accent)}
-    .form-row{margin-bottom:18px}
-    .form-hint{font-size:13px;color:var(--muted);margin-top:6px;font-family:'DM Sans',sans-serif;line-height:1.5}
+    label {
+      display: block;
+      font-size: 12px;
+      font-family: 'Space Mono', monospace;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+      font-weight: 700
+    }
+
+    input[type=text],
+    input[type=number],
+    select {
+      width: 100%;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      padding: 10px 14px;
+      transition: border-color .2s, background .25s;
+      outline: none
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent)
+    }
+
+    .form-row {
+      margin-bottom: 18px
+    }
+
+    .form-hint {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 6px;
+      font-family: 'DM Sans', sans-serif;
+      line-height: 1.5
+    }
 
     /* ── MAX PAGES BADGE ──────────────────────────────── */
-    .max-pages-wrap{position:relative}
-    .max-pages-wrap input{padding-right:96px}
-    .max-pages-badge{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:10px;font-family:'Space Mono',monospace;font-weight:700;padding:3px 8px;border-radius:10px;pointer-events:none;white-space:nowrap}
-    .max-pages-badge.all{background:color-mix(in srgb,var(--success) 20%,transparent);color:var(--success);border:1px solid color-mix(in srgb,var(--success) 45%,transparent)}
-    .max-pages-badge.paged{background:color-mix(in srgb,var(--accent2) 20%,transparent);color:var(--accent2);border:1px solid color-mix(in srgb,var(--accent2) 45%,transparent)}
+    .max-pages-wrap {
+      position: relative
+    }
+
+    .max-pages-wrap input {
+      padding-right: 96px
+    }
+
+    .max-pages-badge {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 10px;
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 10px;
+      pointer-events: none;
+      white-space: nowrap
+    }
+
+    .max-pages-badge.all {
+      background: color-mix(in srgb, var(--success) 20%, transparent);
+      color: var(--success);
+      border: 1px solid color-mix(in srgb, var(--success) 45%, transparent)
+    }
+
+    .max-pages-badge.paged {
+      background: color-mix(in srgb, var(--accent2) 20%, transparent);
+      color: var(--accent2);
+      border: 1px solid color-mix(in srgb, var(--accent2) 45%, transparent)
+    }
 
     /* ── BUTTONS ──────────────────────────────────────── */
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 20px;border-radius:8px;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .15s;width:100%;letter-spacing:.5px}
-    .btn-primary{background:var(--accent);color:#000}
-    .btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 4px 20px color-mix(in srgb,var(--accent) 40%,transparent)}
-    .btn-primary:active{transform:translateY(0)}
-    .btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
-    .btn-ghost{background:transparent;color:var(--text);border:2px solid var(--border)}
-    .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
-    .btn-danger{background:color-mix(in srgb,var(--danger) 15%,transparent);color:var(--danger);border:2px solid color-mix(in srgb,var(--danger) 40%,transparent)}
-    .btn-danger:hover{background:color-mix(in srgb,var(--danger) 28%,transparent)}
-    .btn-sm{padding:6px 14px;font-size:11px;width:auto}
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 20px;
+      border-radius: 8px;
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all .15s;
+      width: 100%;
+      letter-spacing: .5px
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px color-mix(in srgb, var(--accent) 40%, transparent)
+    }
+
+    .btn-primary:active {
+      transform: translateY(0)
+    }
+
+    .btn-primary:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+      transform: none
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 2px solid var(--border)
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      color: var(--accent)
+    }
+
+    .btn-danger {
+      background: color-mix(in srgb, var(--danger) 15%, transparent);
+      color: var(--danger);
+      border: 2px solid color-mix(in srgb, var(--danger) 40%, transparent)
+    }
+
+    .btn-danger:hover {
+      background: color-mix(in srgb, var(--danger) 28%, transparent)
+    }
+
+    .btn-sm {
+      padding: 6px 14px;
+      font-size: 11px;
+      width: auto
+    }
 
     /* ── CONFLICT ─────────────────────────────────────── */
-    #conflict-panel{display:none;background:color-mix(in srgb,var(--warning) 10%,var(--surface));border:2px solid color-mix(in srgb,var(--warning) 50%,transparent);border-radius:10px;padding:16px;margin-top:16px}
-    #conflict-panel h3{font-size:13px;font-family:'Space Mono',monospace;color:var(--warning);margin-bottom:8px;font-weight:700}
-    #conflict-panel p{font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5}
-    .conflict-btns{display:flex;flex-direction:column;gap:8px}
-    .conflict-btns .btn{font-size:12px;padding:9px 14px}
+    #conflict-panel {
+      display: none;
+      background: color-mix(in srgb, var(--warning) 10%, var(--surface));
+      border: 2px solid color-mix(in srgb, var(--warning) 50%, transparent);
+      border-radius: 10px;
+      padding: 16px;
+      margin-top: 16px
+    }
+
+    #conflict-panel h3 {
+      font-size: 13px;
+      font-family: 'Space Mono', monospace;
+      color: var(--warning);
+      margin-bottom: 8px;
+      font-weight: 700
+    }
+
+    #conflict-panel p {
+      font-size: 13px;
+      color: var(--text2);
+      margin-bottom: 12px;
+      line-height: 1.5
+    }
+
+    .conflict-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    .conflict-btns .btn {
+      font-size: 12px;
+      padding: 9px 14px
+    }
 
     /* ── PROGRESS ─────────────────────────────────────── */
-    #progress-section{display:none}
-    .progress-bar-wrap{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin:14px 0 8px}
-    .progress-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:4px;transition:width .5s ease}
-    .progress-label{font-size:12px;font-family:'Space Mono',monospace;color:var(--muted);display:flex;justify-content:space-between}
-    .status-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-family:'Space Mono',monospace;font-weight:700;padding:4px 10px;border-radius:20px}
-    .status-running{background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent)}
-    .status-completed{background:color-mix(in srgb,var(--success) 18%,transparent);color:var(--success)}
-    .status-error{background:color-mix(in srgb,var(--danger) 18%,transparent);color:var(--danger)}
-    .status-no_results{background:color-mix(in srgb,var(--warning) 18%,transparent);color:var(--warning)}
-    .pulse{width:8px;height:8px;border-radius:50%;background:currentColor;animation:pulse 1.2s ease infinite}
-    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
-    @keyframes indeterminate{0%{background-position:200% center}100%{background-position:-200% center}}
-    .progress-msg{font-size:13px;margin-top:8px;color:var(--text2);line-height:1.5}
-    .warnings-list{margin-top:10px}
-    .warning-item{font-size:12px;color:var(--warning);font-family:'Space Mono',monospace;padding:4px 0;border-bottom:1px solid var(--border)}
+    #progress-section {
+      display: none
+    }
+
+    .progress-bar-wrap {
+      height: 8px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 14px 0 8px
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 4px;
+      transition: width .5s ease
+    }
+
+    .progress-label {
+      font-size: 12px;
+      font-family: 'Space Mono', monospace;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px
+    }
+
+    .status-running {
+      background: color-mix(in srgb, var(--accent) 18%, transparent);
+      color: var(--accent)
+    }
+
+    .status-completed {
+      background: color-mix(in srgb, var(--success) 18%, transparent);
+      color: var(--success)
+    }
+
+    .status-error {
+      background: color-mix(in srgb, var(--danger) 18%, transparent);
+      color: var(--danger)
+    }
+
+    .status-no_results {
+      background: color-mix(in srgb, var(--warning) 18%, transparent);
+      color: var(--warning)
+    }
+
+    .pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: pulse 1.2s ease infinite
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1)
+      }
+
+      50% {
+        opacity: .4;
+        transform: scale(.7)
+      }
+    }
+
+    @keyframes indeterminate {
+      0% {
+        background-position: 200% center
+      }
+
+      100% {
+        background-position: -200% center
+      }
+    }
+
+    .progress-msg {
+      font-size: 13px;
+      margin-top: 8px;
+      color: var(--text2);
+      line-height: 1.5
+    }
+
+    .warnings-list {
+      margin-top: 10px
+    }
+
+    .warning-item {
+      font-size: 12px;
+      color: var(--warning);
+      font-family: 'Space Mono', monospace;
+      padding: 4px 0;
+      border-bottom: 1px solid var(--border)
+    }
 
     /* ── CREDIBILITY ──────────────────────────────────── */
-    .cred-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .cred-item{background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:13px 15px;transition:background .25s}
-    .cred-item .val{font-size:22px;font-family:'Space Mono',monospace;font-weight:700;color:var(--accent)}
-    .cred-item .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px;font-weight:700}
-    .cred-source{margin-top:12px;font-size:13px;color:var(--text2);line-height:1.7}
-    .cred-source a{color:var(--accent);text-decoration:none;font-weight:700}
-    .cred-source a:hover{text-decoration:underline}
+    .cred-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px
+    }
+
+    .cred-item {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 13px 15px;
+      transition: background .25s
+    }
+
+    .cred-item .val {
+      font-size: 22px;
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      color: var(--accent)
+    }
+
+    .cred-item .lbl {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 3px;
+      font-weight: 700
+    }
+
+    .cred-source {
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.7
+    }
+
+    .cred-source a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 700
+    }
+
+    .cred-source a:hover {
+      text-decoration: underline
+    }
 
     /* ── HISTORY ──────────────────────────────────────── */
-    .empty-state{text-align:center;padding:32px;color:var(--muted);font-size:13px}
+    .empty-state {
+      text-align: center;
+      padding: 32px;
+      color: var(--muted);
+      font-size: 13px
+    }
 
     /* ── TABS ─────────────────────────────────────────── */
-    .right-col{display:flex;flex-direction:column;gap:24px}
-    .tabs{display:flex;gap:4px;padding:6px;background:var(--bg);border-radius:10px;border:2px solid var(--border);margin-bottom:20px}
-    .tab-btn{flex:1;padding:10px 12px;border:none;background:transparent;color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;border-radius:7px;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.5px;font-weight:700}
-    .tab-btn.active{background:var(--surface2);color:var(--accent)}
-    .tab-pane{display:none}.tab-pane.active{display:block}
+    .right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 24px
+    }
+
+    .tabs {
+      display: flex;
+      gap: 4px;
+      padding: 6px;
+      background: var(--bg);
+      border-radius: 10px;
+      border: 2px solid var(--border);
+      margin-bottom: 20px
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px 12px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all .15s;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      font-weight: 700
+    }
+
+    .tab-btn.active {
+      background: var(--surface2);
+      color: var(--accent)
+    }
+
+    .tab-pane {
+      display: none
+    }
+
+    .tab-pane.active {
+      display: block
+    }
 
     /* ── CHARTS ───────────────────────────────────────── */
-    .chart-wrap{position:relative;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:20px;transition:background .25s,border-color .25s}
-    .chart-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;gap:12px;flex-wrap:wrap}
-    .chart-title{font-size:14px;font-family:'Space Mono',monospace;font-weight:700;color:var(--text)}
-    .chart-subtitle{font-size:12px;color:var(--muted);margin-top:3px}
-    .chart-hint{font-size:11px;font-family:'Space Mono',monospace;color:var(--accent);margin-top:4px;opacity:.85}
-    .export-btns{display:flex;gap:6px;flex-shrink:0}
-    canvas{max-width:100%}
-    .chart-empty{display:none;text-align:center;padding:48px 20px;color:var(--muted);font-size:14px}
-    .chart-empty-icon{font-size:36px;margin-bottom:12px;opacity:.6}
+    .chart-wrap {
+      position: relative;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      transition: background .25s, border-color .25s
+    }
+
+    .chart-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      gap: 12px;
+      flex-wrap: wrap
+    }
+
+    .chart-title {
+      font-size: 14px;
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      color: var(--text)
+    }
+
+    .chart-subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 3px
+    }
+
+    .chart-hint {
+      font-size: 11px;
+      font-family: 'Space Mono', monospace;
+      color: var(--accent);
+      margin-top: 4px;
+      opacity: .85
+    }
+
+    .export-btns {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0
+    }
+
+    canvas {
+      max-width: 100%
+    }
+
+    .chart-empty {
+      display: none;
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--muted);
+      font-size: 14px
+    }
+
+    .chart-empty-icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+      opacity: .6
+    }
 
     /* ── CHART FILTERS ────────────────────────────────── */
-    .chart-filters{display:flex;flex-wrap:wrap;gap:12px;padding:12px 0 16px;border-bottom:1px solid var(--border);margin-bottom:16px;align-items:flex-end}
-    .filter-group{display:flex;flex-direction:column;gap:5px}
-    .filter-label{font-size:10px;font-family:'Space Mono',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700}
-    .filter-group input[type=number]{width:90px}
-    .filter-group select{min-width:120px}
+    .chart-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 12px 0 16px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+      align-items: flex-end
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px
+    }
+
+    .filter-label {
+      font-size: 10px;
+      font-family: 'Space Mono', monospace;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700
+    }
+
+    .filter-group input[type=number] {
+      width: 90px
+    }
+
+    .filter-group select {
+      min-width: 120px
+    }
 
     /* ── MULTISELECT ──────────────────────────────────── */
-    .multiselect-wrap{position:relative}
-    .multiselect-trigger{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 12px;background:var(--bg);border:2px solid var(--border);border-radius:8px;cursor:pointer;font-family:'Space Mono',monospace;font-size:12px;color:var(--text);min-width:210px;transition:border-color .15s;overflow:hidden}
-    .multiselect-trigger:hover{border-color:var(--accent)}
-    .ms-arrow{color:var(--muted);font-size:10px;flex-shrink:0}
-    .multiselect-dropdown{position:absolute;top:calc(100% + 4px);left:0;z-index:200;background:var(--surface);border:2px solid var(--border);border-radius:10px;min-width:290px;max-height:300px;overflow-y:auto;box-shadow:0 8px 32px var(--shadow)}
-    .ms-search-wrap{padding:10px 10px 6px;position:sticky;top:0;background:var(--surface);z-index:1;border-bottom:1px solid var(--border)}
-    .ms-search{width:100%;padding:8px 10px;background:var(--bg);border:2px solid var(--border);border-radius:6px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;outline:none}
-    .ms-search:focus{border-color:var(--accent)}
-    .ms-actions{display:flex;gap:6px;padding:6px 10px;border-bottom:1px solid var(--border)}
-    .ms-action-btn{font-size:11px;font-family:'Space Mono',monospace;font-weight:700;color:var(--accent);background:none;border:none;cursor:pointer;padding:3px 8px;border-radius:4px;transition:background .1s}
-    .ms-action-btn:hover{background:color-mix(in srgb,var(--accent) 15%,transparent)}
-    .ms-option{display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif;transition:background .1s;color:var(--text)}
-    .ms-option:hover{background:var(--surface2)}
-    .ms-option input[type=checkbox]{accent-color:var(--accent);width:15px;height:15px;flex-shrink:0;cursor:pointer}
-    .ms-footer{font-size:11px;color:var(--muted);padding:6px 12px 8px;font-family:'Space Mono',monospace;border-top:1px solid var(--border);position:sticky;bottom:0;background:var(--surface)}
-    .ms-hidden{display:none!important}
+    .multiselect-wrap {
+      position: relative
+    }
+
+    .multiselect-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 9px 12px;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      color: var(--text);
+      min-width: 210px;
+      transition: border-color .15s;
+      overflow: hidden
+    }
+
+    .multiselect-trigger:hover {
+      border-color: var(--accent)
+    }
+
+    .ms-arrow {
+      color: var(--muted);
+      font-size: 10px;
+      flex-shrink: 0
+    }
+
+    .multiselect-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      z-index: 200;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      min-width: 290px;
+      max-height: 300px;
+      overflow-y: auto;
+      box-shadow: 0 8px 32px var(--shadow)
+    }
+
+    .ms-search-wrap {
+      padding: 10px 10px 6px;
+      position: sticky;
+      top: 0;
+      background: var(--surface);
+      z-index: 1;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .ms-search {
+      width: 100%;
+      padding: 8px 10px;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      outline: none
+    }
+
+    .ms-search:focus {
+      border-color: var(--accent)
+    }
+
+    .ms-actions {
+      display: flex;
+      gap: 6px;
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .ms-action-btn {
+      font-size: 11px;
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      color: var(--accent);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 3px 8px;
+      border-radius: 4px;
+      transition: background .1s
+    }
+
+    .ms-action-btn:hover {
+      background: color-mix(in srgb, var(--accent) 15%, transparent)
+    }
+
+    .ms-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      transition: background .1s;
+      color: var(--text)
+    }
+
+    .ms-option:hover {
+      background: var(--surface2)
+    }
+
+    .ms-option input[type=checkbox] {
+      accent-color: var(--accent);
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      cursor: pointer
+    }
+
+    .ms-footer {
+      font-size: 11px;
+      color: var(--muted);
+      padding: 6px 12px 8px;
+      font-family: 'Space Mono', monospace;
+      border-top: 1px solid var(--border);
+      position: sticky;
+      bottom: 0;
+      background: var(--surface)
+    }
+
+    .ms-hidden {
+      display: none !important
+    }
 
     /* ── ALERT ────────────────────────────────────────── */
-    .alert{padding:12px 16px;border-radius:8px;font-size:13px;margin-top:12px;display:none;line-height:1.5}
-    .alert-error{background:color-mix(in srgb,var(--danger) 12%,transparent);border:2px solid color-mix(in srgb,var(--danger) 45%,transparent);color:var(--danger);font-weight:600}
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-top: 12px;
+      display: none;
+      line-height: 1.5
+    }
+
+    .alert-error {
+      background: color-mix(in srgb, var(--danger) 12%, transparent);
+      border: 2px solid color-mix(in srgb, var(--danger) 45%, transparent);
+      color: var(--danger);
+      font-weight: 600
+    }
 
     /* ── TABLE ────────────────────────────────────────── */
-    .filter-banner{display:none;margin-bottom:12px;padding:11px 16px;border-radius:8px;background:color-mix(in srgb,var(--accent) 12%,transparent);border:2px solid color-mix(in srgb,var(--accent) 40%,transparent);font-size:13px;font-family:'Space Mono',monospace;color:var(--accent);align-items:center;gap:10px;font-weight:700}
-    .filter-banner.show{display:flex}
-    .banner-clear{background:none;border:none;cursor:pointer;color:var(--accent);font-size:18px;font-weight:700;margin-left:auto;line-height:1;padding:0 2px}
-    .banner-clear:hover{opacity:.7}
-    .table-toolbar{display:flex;gap:10px;margin-bottom:12px;align-items:flex-end;flex-wrap:wrap}
-    .table-toolbar input,.table-toolbar select{font-size:13px;padding:9px 12px}
-    .table-toolbar input{flex:1;min-width:200px}
-    .table-toolbar select{min-width:160px}
-    .table-info{font-size:12px;font-family:'Space Mono',monospace;color:var(--muted);margin-bottom:8px;padding:4px 0}
-    .table-wrap{overflow-x:auto;border-radius:8px;border:2px solid var(--border)}
-    table{width:100%;border-collapse:collapse;font-size:13px}
-    thead tr{background:var(--surface2)}
-    th{padding:13px 14px;text-align:left;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;white-space:nowrap;border-bottom:2px solid var(--border)}
-    td{padding:13px 14px;border-top:1px solid var(--border);color:var(--text);font-size:13px;line-height:1.45}
-    tr:hover td{background:color-mix(in srgb,var(--accent) 4%,var(--surface2))}
-    td a{color:var(--accent);text-decoration:none;font-size:13px;font-weight:600}
-    td a:hover{text-decoration:underline}
-    .stars{color:var(--warning);font-size:15px;letter-spacing:-1px}
-    .no-data{text-align:center;padding:48px;color:var(--muted);font-size:14px}
+    .filter-banner {
+      display: none;
+      margin-bottom: 12px;
+      padding: 11px 16px;
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      border: 2px solid color-mix(in srgb, var(--accent) 40%, transparent);
+      font-size: 13px;
+      font-family: 'Space Mono', monospace;
+      color: var(--accent);
+      align-items: center;
+      gap: 10px;
+      font-weight: 700
+    }
+
+    .filter-banner.show {
+      display: flex
+    }
+
+    .banner-clear {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--accent);
+      font-size: 18px;
+      font-weight: 700;
+      margin-left: auto;
+      line-height: 1;
+      padding: 0 2px
+    }
+
+    .banner-clear:hover {
+      opacity: .7
+    }
+
+    .table-toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+      align-items: flex-end;
+      flex-wrap: wrap
+    }
+
+    .table-toolbar input,
+    .table-toolbar select {
+      font-size: 13px;
+      padding: 9px 12px
+    }
+
+    .table-toolbar input {
+      flex: 1;
+      min-width: 200px
+    }
+
+    .table-toolbar select {
+      min-width: 160px
+    }
+
+    .table-info {
+      font-size: 12px;
+      font-family: 'Space Mono', monospace;
+      color: var(--muted);
+      margin-bottom: 8px;
+      padding: 4px 0
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 8px;
+      border: 2px solid var(--border)
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px
+    }
+
+    thead tr {
+      background: var(--surface2)
+    }
+
+    th {
+      padding: 13px 14px;
+      text-align: left;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      font-weight: 700;
+      white-space: nowrap;
+      border-bottom: 2px solid var(--border)
+    }
+
+    td {
+      padding: 13px 14px;
+      border-top: 1px solid var(--border);
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.45
+    }
+
+    tr:hover td {
+      background: color-mix(in srgb, var(--accent) 4%, var(--surface2))
+    }
+
+    td a {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600
+    }
+
+    td a:hover {
+      text-decoration: underline
+    }
+
+    .stars {
+      color: var(--warning);
+      font-size: 15px;
+      letter-spacing: -1px
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 48px;
+      color: var(--muted);
+      font-size: 14px
+    }
 
     /* ── PAGINATION ───────────────────────────────────── */
-    .pagination{display:flex;gap:6px;justify-content:center;margin-top:16px;flex-wrap:wrap;align-items:center}
-    .page-btn{padding:8px 13px;border-radius:7px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;border:2px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;transition:all .15s;min-width:38px;text-align:center}
-    .page-btn:hover:not([disabled]){border-color:var(--accent);color:var(--accent)}
-    .page-btn.active{background:var(--accent);color:#000;border-color:var(--accent)}
-    .page-btn[disabled]{opacity:.3;cursor:not-allowed}
-    .page-info{font-size:12px;font-family:'Space Mono',monospace;color:var(--muted);padding:0 6px}
+    .pagination {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      margin-top: 16px;
+      flex-wrap: wrap;
+      align-items: center
+    }
+
+    .page-btn {
+      padding: 8px 13px;
+      border-radius: 7px;
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      transition: all .15s;
+      min-width: 38px;
+      text-align: center
+    }
+
+    .page-btn:hover:not([disabled]) {
+      border-color: var(--accent);
+      color: var(--accent)
+    }
+
+    .page-btn.active {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent)
+    }
+
+    .page-btn[disabled] {
+      opacity: .3;
+      cursor: not-allowed
+    }
+
+    .page-info {
+      font-size: 12px;
+      font-family: 'Space Mono', monospace;
+      color: var(--muted);
+      padding: 0 6px
+    }
 
     /* ── CLICK-FLASH ──────────────────────────────────── */
-    @keyframes filterFlash{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 60%,transparent)}100%{box-shadow:0 0 0 14px transparent}}
-    .filter-flash{animation:filterFlash .55s ease-out}
+    @keyframes filterFlash {
+      0% {
+        box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent)
+      }
 
-    ::-webkit-scrollbar{width:6px;height:6px}
-    ::-webkit-scrollbar-track{background:var(--bg)}
-    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+      100% {
+        box-shadow: 0 0 0 14px transparent
+      }
+    }
+
+    .filter-flash {
+      animation: filterFlash .55s ease-out
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg)
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px
+    }
   </style>
 </head>
+
 <body>
-<div class="app">
+  <div class="app">
 
-<!-- HEADER -->
-<header>
-  <div class="logo">
-    <div class="logo-mark"><span>SF</span></div>
-    <div>
-      <h1>SkillsFuture Intelligence
-        <small>Course Data Platform &middot; Singapore</small>
-      </h1>
-    </div>
-  </div>
-  <div class="header-right">
-    <div class="theme-toggle" onclick="toggleTheme()" role="button" tabindex="0" title="Switch between light and dark mode">
-      <span class="theme-icon" id="theme-icon">🌙</span>
-      <div class="toggle-track"><div class="toggle-thumb"></div></div>
-      <span class="theme-label" id="theme-label">Dark Mode</span>
-    </div>
-    <div class="header-meta">Data source: <strong>MySkillsFuture.gov.sg</strong></div>
-  </div>
-</header>
-
-<div class="main-grid">
-<!-- ══ LEFT ══════════════════════════════════════════ -->
-<div style="display:flex;flex-direction:column;gap:20px;">
-
-  <div class="card">
-    <div class="card-header">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <h2>Scraper Controls</h2>
-    </div>
-    <div class="card-body">
-      <div class="form-row">
-        <label>Search Keyword</label>
-        <input type="text" id="keyword-input" placeholder="e.g. data analytics, python…">
-        <div class="form-hint">Enter any course topic to search on MySkillsFuture</div>
-      </div>
-      <div class="form-row">
-        <label>Max Pages to Scrape</label>
-        <div class="max-pages-wrap">
-          <input type="number" id="max-pages-input" placeholder="Blank / 0 = all pages" min="0" max="200" oninput="updateMaxPagesBadge(this.value)">
-          <span class="max-pages-badge all" id="max-pages-badge">ALL PAGES</span>
-        </div>
-        <div class="form-hint"><strong style="color:var(--success)">Blank or 0</strong> = scrape every page &nbsp;|&nbsp; <strong style="color:var(--accent2)">1–200</strong> = limit to N pages</div>
-      </div>
-      <div id="conflict-panel">
-        <h3>&#9888; Keyword Already Exists</h3>
-        <p id="conflict-msg"></p>
-        <div class="conflict-btns">
-          <button class="btn btn-ghost" onclick="viewExisting()">&#128202; View Existing Data</button>
-          <button class="btn btn-ghost" onclick="startScrape('append')">&#10133; Append New Results</button>
-          <button class="btn btn-danger" onclick="startScrape('overwrite')">&#128260; Rescrape &amp; Overwrite</button>
+    <!-- HEADER -->
+    <header>
+      <div class="logo">
+        <div class="logo-mark"><span>SF</span></div>
+        <div>
+          <h1>SkillsFuture Intelligence
+            <small>Course Data Platform &middot; Singapore</small>
+          </h1>
         </div>
       </div>
-      <div id="scrape-error" class="alert alert-error"></div>
-      <button class="btn btn-primary" id="scrape-btn" onclick="handleScrapeClick()" style="margin-top:4px;">&#9654; Start Scraping</button>
-    </div>
-  </div>
-
-  <div class="card" id="progress-section">
-    <div class="card-header">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      <h2>Scraping Progress</h2>
-      <span id="status-badge" class="status-badge status-running tag"><span class="pulse"></span>Running</span>
-    </div>
-    <div class="card-body">
-      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill"></div></div>
-      <div class="progress-label"><span id="progress-text">Page 0 of 0</span><span id="progress-pct">0%</span></div>
-      <p class="progress-msg" id="progress-msg">Initialising&hellip;</p>
-      <div class="warnings-list" id="warnings-list"></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-header">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      <h2>Data Credibility</h2>
-    </div>
-    <div class="card-body">
-      <div class="cred-grid">
-        <div class="cred-item"><div class="val" id="cred-total">&mdash;</div><div class="lbl">Total Records</div></div>
-        <div class="cred-item"><div class="val" id="cred-dupes">0</div><div class="lbl">Duplicates Removed</div></div>
-        <div class="cred-item" style="grid-column:1/-1;"><div class="val" style="font-size:14px;" id="cred-time">&mdash;</div><div class="lbl">Last Scraped</div></div>
-      </div>
-      <div class="cred-source">
-        <strong>Source:</strong> <a href="https://www.myskillsfuture.gov.sg" target="_blank">MySkillsFuture.gov.sg</a> — official Singapore government portal.<br><br>
-        <strong>Validation:</strong> Duplicates by (Title + Provider) removed. Missing ratings shown as "—". Empty fees shown as "N/A".
-      </div>
-      <div id="cred-warnings"></div>
-    </div>
-  </div>
-
-
-</div><!-- /left -->
-
-<!-- ══ RIGHT ════════════════════════════════════════ -->
-<div class="right-col">
-  <div class="card">
-    <div class="card-header">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-      <h2>Dashboard</h2>
-      <span id="dash-keyword" class="tag">No data loaded</span>
-      <button class="btn btn-ghost btn-sm" id="export-excel-btn" onclick="exportExcel()" style="margin-left:8px;display:none;">&#11015; Excel</button>
-    </div>
-    <div class="card-body">
-      <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('charts',this)">&#128202; Charts</button>
-        <button class="tab-btn" onclick="switchTab('table',this)" id="table-tab-btn">&#128203; Data Table</button>
-      </div>
-
-      <!-- CHARTS TAB -->
-      <div class="tab-pane active" id="tab-charts">
-        <div id="no-data-msg" class="no-data"><div style="font-size:44px;margin-bottom:14px;">&#128225;</div>Run a search to load the dashboard</div>
-
-        <!-- Chart 1: Provider -->
-        <div class="chart-wrap" id="chart-provider-wrap" style="display:none;">
-          <div class="chart-header">
-            <div>
-              <div class="chart-title">Courses per Training Provider</div>
-              <div class="chart-subtitle">Top providers by number of courses listed</div>
-              <div class="chart-hint">&#128073; Click any bar to view that provider's courses in the Data Table</div>
-            </div>
-            <div class="export-btns">
-              <button class="btn btn-ghost btn-sm" onclick="exportChart('chart-provider','png')">PNG</button>
-              <button class="btn btn-ghost btn-sm" onclick="exportChart('chart-provider','jpg')">JPG</button>
-            </div>
+      <div class="header-right">
+        <div class="theme-toggle" onclick="toggleTheme()" role="button" tabindex="0"
+          title="Switch between light and dark mode">
+          <span class="theme-icon" id="theme-icon">🌙</span>
+          <div class="toggle-track">
+            <div class="toggle-thumb"></div>
           </div>
-          <div class="chart-filters">
-            <div class="filter-group"><label class="filter-label">Show top</label>
-              <select id="provider-top-n" onchange="renderProviderChart(allCourses)">
-                <option value="10">10</option><option value="15" selected>15</option><option value="20">20</option><option value="999">All</option>
-              </select>
-            </div>
-            <div class="filter-group"><label class="filter-label">Sort by</label>
-              <select id="provider-sort" onchange="renderProviderChart(allCourses)">
-                <option value="desc" selected>Most courses</option><option value="asc">Fewest courses</option><option value="alpha">A to Z</option>
-              </select>
-            </div>
-            <div class="filter-group"><label class="filter-label">Min courses</label>
-              <input type="number" id="provider-min-count" value="1" min="1" oninput="renderProviderChart(allCourses)">
-            </div>
-          </div>
-          <div id="chart-provider-container" style="position:relative;height:280px;"><canvas id="chart-provider"></canvas></div>
+          <span class="theme-label" id="theme-label">Dark Mode</span>
         </div>
+        <div class="header-meta">Data source: <strong>MySkillsFuture.gov.sg</strong></div>
+      </div>
+    </header>
 
-        <!-- Chart 2: Fee distribution -->
-        <div class="chart-wrap" id="chart-fee-wrap" style="display:none;">
-          <div class="chart-header">
-            <div>
-              <div class="chart-title">Course Fee Distribution</div>
-              <div class="chart-subtitle">Course fees grouped into ranges (SGD)</div>
-              <div class="chart-hint">&#128073; Click any bar to view those courses in the Data Table</div>
-            </div>
-            <div class="export-btns">
-              <button class="btn btn-ghost btn-sm" onclick="exportChart('chart-fee','png')">PNG</button>
-              <button class="btn btn-ghost btn-sm" onclick="exportChart('chart-fee','jpg')">JPG</button>
-            </div>
+    <div class="main-grid">
+      <!-- ══ LEFT ══════════════════════════════════════════ -->
+      <div style="display:flex;flex-direction:column;gap:20px;">
+
+        <div class="card">
+          <div class="card-header">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+            </svg>
+            <h2>Scraper Controls</h2>
           </div>
-          <div class="chart-filters">
-            <div class="filter-group" style="flex:1;min-width:220px;"><label class="filter-label">Training Provider(s)</label>
-              <div class="multiselect-wrap" id="fee-provider-wrap">
-                <div class="multiselect-trigger" id="fee-provider-trigger" onclick="toggleMs('fee-provider')"><span id="fee-provider-label">All Providers</span><span class="ms-arrow">&#9662;</span></div>
-                <div class="multiselect-dropdown" id="fee-provider-dropdown" style="display:none;">
-                  <div class="ms-search-wrap"><input type="text" class="ms-search" placeholder="Search..." oninput="filterMsOpts('fee-provider',this.value)"></div>
-                  <div class="ms-actions"><button class="ms-action-btn" onclick="msSelectAll('fee-provider')">Select All</button><button class="ms-action-btn" onclick="msClearAll('fee-provider')">Clear All</button></div>
-                  <div id="fee-provider-options"></div><div class="ms-footer" id="fee-provider-footer"></div>
-                </div>
+          <div class="card-body">
+            <div class="form-row">
+              <label>Search Keyword</label>
+              <input type="text" id="keyword-input" placeholder="e.g. data analytics, python…">
+              <div class="form-hint">Enter any course topic to search on MySkillsFuture</div>
+            </div>
+            <div class="form-row">
+              <label>Max Pages to Scrape</label>
+              <div class="max-pages-wrap">
+                <input type="number" id="max-pages-input" placeholder="Blank / 0 = all pages" min="0" max="200"
+                  oninput="updateMaxPagesBadge(this.value)">
+                <span class="max-pages-badge all" id="max-pages-badge">ALL PAGES</span>
+              </div>
+              <div class="form-hint"><strong style="color:var(--success)">Blank or 0</strong> = scrape every page
+                &nbsp;|&nbsp; <strong style="color:var(--accent2)">1–200</strong> = limit to N pages</div>
+            </div>
+            <div id="conflict-panel">
+              <h3>&#9888; Keyword Already Exists</h3>
+              <p id="conflict-msg"></p>
+              <div class="conflict-btns">
+                <button class="btn btn-ghost" onclick="viewExisting()">&#128202; View Existing Data</button>
+                <button class="btn btn-ghost" onclick="startScrape('append')">&#10133; Append New Results</button>
+                <button class="btn btn-danger" onclick="startScrape('overwrite')">&#128260; Rescrape &amp;
+                  Overwrite</button>
               </div>
             </div>
-            <div class="filter-group"><label class="filter-label">Fee type</label>
-              <select id="fee-type" onchange="renderFeeChart(allCourses)"><option value="full" selected>Full Course Fee</option><option value="nett">After SF Funding</option></select>
-            </div>
-            <div class="filter-group"><label class="filter-label">Bin size</label>
-              <select id="fee-bin" onchange="renderFeeChart(allCourses)"><option value="auto" selected>Auto</option><option value="100">$100</option><option value="250">$250</option><option value="500">$500</option><option value="1000">$1,000</option></select>
-            </div>
-            <div class="filter-group"><label class="filter-label">Max fee (SGD)</label>
-              <input type="number" id="fee-max" placeholder="No limit" min="0" oninput="renderFeeChart(allCourses)">
-            </div>
+            <div id="scrape-error" class="alert alert-error"></div>
+            <button class="btn btn-primary" id="scrape-btn" onclick="handleScrapeClick()"
+              style="margin-top:4px;">&#9654; Start Scraping</button>
           </div>
-          <div class="chart-empty" id="chart-fee-empty"><div class="chart-empty-icon">&#128683;</div>No providers selected.</div>
-          <canvas id="chart-fee"></canvas>
         </div>
 
-        <!-- Chart 3: Scatter -->
-        <div class="chart-wrap" id="chart-scatter-wrap" style="display:none;">
-          <div class="chart-header">
-            <div><div class="chart-title">Star Rating vs Review Volume</div><div class="chart-subtitle">Each dot is one course — hover for details</div></div>
-            <div class="export-btns"><button class="btn btn-ghost btn-sm" onclick="exportChart('chart-scatter','png')">PNG</button><button class="btn btn-ghost btn-sm" onclick="exportChart('chart-scatter','jpg')">JPG</button></div>
+        <div class="card" id="progress-section">
+          <div class="card-header">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+            </svg>
+            <h2>Scraping Progress</h2>
+            <span id="status-badge" class="status-badge status-running tag"><span class="pulse"></span>Running</span>
           </div>
-          <div class="chart-filters">
-            <div class="filter-group" style="flex:1;min-width:220px;"><label class="filter-label">Training Provider(s)</label>
-              <div class="multiselect-wrap" id="scatter-provider-wrap">
-                <div class="multiselect-trigger" id="scatter-provider-trigger" onclick="toggleMs('scatter-provider')"><span id="scatter-provider-label">All Providers</span><span class="ms-arrow">&#9662;</span></div>
-                <div class="multiselect-dropdown" id="scatter-provider-dropdown" style="display:none;">
-                  <div class="ms-search-wrap"><input type="text" class="ms-search" placeholder="Search..." oninput="filterMsOpts('scatter-provider',this.value)"></div>
-                  <div class="ms-actions"><button class="ms-action-btn" onclick="msSelectAll('scatter-provider')">Select All</button><button class="ms-action-btn" onclick="msClearAll('scatter-provider')">Clear All</button></div>
-                  <div id="scatter-provider-options"></div><div class="ms-footer" id="scatter-provider-footer"></div>
-                </div>
+          <div class="card-body">
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-label"><span id="progress-text">Page 0 of 0</span><span id="progress-pct">0%</span>
+            </div>
+            <p class="progress-msg" id="progress-msg">Initialising&hellip;</p>
+            <div class="warnings-list" id="warnings-list"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            <h2>Data Credibility</h2>
+          </div>
+          <div class="card-body">
+            <div class="cred-grid">
+              <div class="cred-item">
+                <div class="val" id="cred-total">&mdash;</div>
+                <div class="lbl">Total Records</div>
+              </div>
+              <div class="cred-item">
+                <div class="val" id="cred-dupes">0</div>
+                <div class="lbl">Duplicates Removed</div>
+              </div>
+              <div class="cred-item" style="grid-column:1/-1;">
+                <div class="val" style="font-size:14px;" id="cred-time">&mdash;</div>
+                <div class="lbl">Last Scraped</div>
               </div>
             </div>
-            <div class="filter-group"><label class="filter-label">Min reviews</label><input type="number" id="scatter-min-reviews" value="0" min="0" oninput="renderScatterChart(allCourses)"></div>
-            <div class="filter-group"><label class="filter-label">Min rating</label>
-              <select id="scatter-min-rating" onchange="renderScatterChart(allCourses)"><option value="0" selected>Any</option><option value="3">3+ stars</option><option value="4">4+ stars</option><option value="4.5">4.5+ stars</option></select>
+            <div class="cred-source">
+              <strong>Source:</strong> <a href="https://www.myskillsfuture.gov.sg"
+                target="_blank">MySkillsFuture.gov.sg</a> — official Singapore government portal.<br><br>
+              <strong>Validation:</strong> Duplicates by (Title + Provider) removed. Missing ratings shown as "—". Empty
+              fees shown as "N/A".
             </div>
-            <div class="filter-group"><label class="filter-label">Max rating</label>
-              <select id="scatter-max-rating" onchange="renderScatterChart(allCourses)"><option value="5" selected>Any</option><option value="4.9">Under 5</option><option value="4">Under 4</option><option value="3">Under 3</option></select>
-            </div>
+            <div id="cred-warnings"></div>
           </div>
-          <div class="chart-empty" id="chart-scatter-empty"><div class="chart-empty-icon">&#128683;</div>No rated courses match the current filters.</div>
-          <canvas id="chart-scatter"></canvas>
         </div>
 
-        <!-- Chart 4: Top rated -->
-        <div class="chart-wrap" id="chart-toprated-wrap" style="display:none;">
-          <div class="chart-header">
-            <div><div class="chart-title">Top Rated Courses</div><div class="chart-subtitle">Courses ranked by star rating (min. reviews threshold applied)</div></div>
-            <div class="export-btns"><button class="btn btn-ghost btn-sm" onclick="exportChart('chart-toprated','png')">PNG</button><button class="btn btn-ghost btn-sm" onclick="exportChart('chart-toprated','jpg')">JPG</button></div>
+
+      </div><!-- /left -->
+
+      <!-- ══ RIGHT ════════════════════════════════════════ -->
+      <div class="right-col">
+        <div class="card">
+          <div class="card-header">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <path d="M3 9h18M9 21V9" />
+            </svg>
+            <h2>Dashboard</h2>
+            <span id="dash-keyword" class="tag">No data loaded</span>
+            <button class="btn btn-ghost btn-sm" id="export-excel-btn" onclick="exportExcel()"
+              style="margin-left:8px;display:none;">&#11015; Excel</button>
           </div>
-          <div class="chart-filters">
-            <div class="filter-group" style="flex:1;min-width:220px;"><label class="filter-label">Training Provider(s)</label>
-              <div class="multiselect-wrap" id="toprated-provider-wrap">
-                <div class="multiselect-trigger" id="toprated-provider-trigger" onclick="toggleMs('toprated-provider')"><span id="toprated-provider-label">All Providers</span><span class="ms-arrow">&#9662;</span></div>
-                <div class="multiselect-dropdown" id="toprated-provider-dropdown" style="display:none;">
-                  <div class="ms-search-wrap"><input type="text" class="ms-search" placeholder="Search..." oninput="filterMsOpts('toprated-provider',this.value)"></div>
-                  <div class="ms-actions"><button class="ms-action-btn" onclick="msSelectAll('toprated-provider')">Select All</button><button class="ms-action-btn" onclick="msClearAll('toprated-provider')">Clear All</button></div>
-                  <div id="toprated-provider-options"></div><div class="ms-footer" id="toprated-provider-footer"></div>
-                </div>
+          <div class="card-body">
+            <div class="tabs">
+              <button class="tab-btn active" onclick="switchTab('charts',this)">&#128202; Charts</button>
+              <button class="tab-btn" onclick="switchTab('table',this)" id="table-tab-btn">&#128203; Data Table</button>
+            </div>
+
+            <!-- CHARTS TAB -->
+            <div class="tab-pane active" id="tab-charts">
+              <div id="no-data-msg" class="no-data">
+                <div style="font-size:44px;margin-bottom:14px;">&#128225;</div>Run a search to load the dashboard
               </div>
-            </div>
-            <div class="filter-group"><label class="filter-label">Min reviews</label><input type="number" id="toprated-min-reviews" value="5" min="0" oninput="renderTopratedChart(allCourses)"></div>
-            <div class="filter-group"><label class="filter-label">Show top</label>
-              <select id="toprated-n" onchange="renderTopratedChart(allCourses)"><option value="10" selected>10</option><option value="15">15</option><option value="20">20</option></select>
-            </div>
-            <div class="filter-group"><label class="filter-label">Sort by</label>
-              <select id="toprated-sort" onchange="renderTopratedChart(allCourses)"><option value="rating" selected>Rating</option><option value="reviews">Reviews</option></select>
-            </div>
-          </div>
-          <div class="chart-empty" id="chart-toprated-empty"><div class="chart-empty-icon">&#128683;</div>No rated courses match the current filters.</div>
-          <div id="chart-toprated-container" style="position:relative;height:260px;"><canvas id="chart-toprated"></canvas></div>
-        </div>
 
-        <!-- Chart 5: Fee vs Rating -->
-        <div class="chart-wrap" id="chart-feerating-wrap" style="display:none;">
-          <div class="chart-header">
-            <div><div class="chart-title">Course Fee vs Star Rating</div><div class="chart-subtitle">Does price correlate with quality? — hover for details</div></div>
-            <div class="export-btns"><button class="btn btn-ghost btn-sm" onclick="exportChart('chart-feerating','png')">PNG</button><button class="btn btn-ghost btn-sm" onclick="exportChart('chart-feerating','jpg')">JPG</button></div>
-          </div>
-          <div class="chart-filters">
-            <div class="filter-group" style="flex:1;min-width:220px;"><label class="filter-label">Training Provider(s)</label>
-              <div class="multiselect-wrap" id="feerating-provider-wrap">
-                <div class="multiselect-trigger" id="feerating-provider-trigger" onclick="toggleMs('feerating-provider')"><span id="feerating-provider-label">All Providers</span><span class="ms-arrow">&#9662;</span></div>
-                <div class="multiselect-dropdown" id="feerating-provider-dropdown" style="display:none;">
-                  <div class="ms-search-wrap"><input type="text" class="ms-search" placeholder="Search..." oninput="filterMsOpts('feerating-provider',this.value)"></div>
-                  <div class="ms-actions"><button class="ms-action-btn" onclick="msSelectAll('feerating-provider')">Select All</button><button class="ms-action-btn" onclick="msClearAll('feerating-provider')">Clear All</button></div>
-                  <div id="feerating-provider-options"></div><div class="ms-footer" id="feerating-provider-footer"></div>
+              <!-- Chart 1: Provider -->
+              <div class="chart-wrap" id="chart-provider-wrap" style="display:none;">
+                <div class="chart-header">
+                  <div>
+                    <div class="chart-title">Courses per Training Provider</div>
+                    <div class="chart-subtitle">Top providers by number of courses listed</div>
+                    <div class="chart-hint">&#128073; Click any bar to view that provider's courses in the Data Table
+                    </div>
+                  </div>
+                  <div class="export-btns">
+                    <button class="btn btn-ghost btn-sm" onclick="exportChart('chart-provider','png')">PNG</button>
+                    <button class="btn btn-ghost btn-sm" onclick="exportChart('chart-provider','jpg')">JPG</button>
+                  </div>
                 </div>
+                <div class="chart-filters">
+                  <div class="filter-group"><label class="filter-label">Show top</label>
+                    <select id="provider-top-n" onchange="renderProviderChart(allCourses)">
+                      <option value="10">10</option>
+                      <option value="15" selected>15</option>
+                      <option value="20">20</option>
+                      <option value="999">All</option>
+                    </select>
+                  </div>
+                  <div class="filter-group"><label class="filter-label">Sort by</label>
+                    <select id="provider-sort" onchange="renderProviderChart(allCourses)">
+                      <option value="desc" selected>Most courses</option>
+                      <option value="asc">Fewest courses</option>
+                      <option value="alpha">A to Z</option>
+                    </select>
+                  </div>
+                  <div class="filter-group"><label class="filter-label">Min courses</label>
+                    <input type="number" id="provider-min-count" value="1" min="1"
+                      oninput="renderProviderChart(allCourses)">
+                  </div>
+                </div>
+                <div id="chart-provider-container" style="position:relative;height:280px;"><canvas
+                    id="chart-provider"></canvas></div>
               </div>
+
+              <!-- Chart 2: Fee distribution -->
+              <div class="chart-wrap" id="chart-fee-wrap" style="display:none;">
+                <div class="chart-header">
+                  <div>
+                    <div class="chart-title">Course Fee Distribution</div>
+                    <div class="chart-subtitle">Course fees grouped into ranges (SGD)</div>
+                    <div class="chart-hint">&#128073; Click any bar to view those courses in the Data Table</div>
+                  </div>
+                  <div class="export-btns">
+                    <button class="btn btn-ghost btn-sm" onclick="exportChart('chart-fee','png')">PNG</button>
+                    <button class="btn btn-ghost btn-sm" onclick="exportChart('chart-fee','jpg')">JPG</button>
+                  </div>
+                </div>
+                <div class="chart-filters">
+                  <div class="filter-group" style="flex:1;min-width:220px;"><label class="filter-label">Training
+                      Provider(s)</label>
+                    <div class="multiselect-wrap" id="fee-provider-wrap">
+                      <div class="multiselect-trigger" id="fee-provider-trigger" onclick="toggleMs('fee-provider')">
+                        <span id="fee-provider-label">All Providers</span><span class="ms-arrow">&#9662;</span></div>
+                      <div class="multiselect-dropdown" id="fee-provider-dropdown" style="display:none;">
+                        <div class="ms-search-wrap"><input type="text" class="ms-search" placeholder="Search..."
+                            oninput="filterMsOpts('fee-provider',this.value)"></div>
+                        <div class="ms-actions"><button class="ms-action-btn"
+                            onclick="msSelectAll('fee-provider')">Select All</button><button class="ms-action-btn"
+                            onclick="msClearAll('fee-provider')">Clear All</button></div>
+                        <div id="fee-provider-options"></div>
+                        <div class="ms-footer" id="fee-provider-footer"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="filter-group"><label class="filter-label">Fee type</label>
+                    <select id="fee-type" onchange="renderFeeChart(allCourses)">
+                      <option value="full" selected>Full Course Fee</option>
+                      <option value="nett">After SF Funding</option>
+                    </select>
+                  </div>
+                  <div class="filter-group"><label class="filter-label">Bin size</label>
+                    <select id="fee-bin" onchange="renderFeeChart(allCourses)">
+                      <option value="auto" selected>Auto</option>
+                      <option value="100">$100</option>
+                      <option value="250">$250</option>
+                      <option value="500">$500</option>
+                      <option value="1000">$1,000</option>
+                    </select>
+                  </div>
+                  <div class="filter-group"><label class="filter-label">Max fee (SGD)</label>
+                    <input type="number" id="fee-max" placeholder="No limit" min="0"
+                      oninput="renderFeeChart(allCourses)">
+                  </div>
+                </div>
+                <div class="chart-empty" id="chart-fee-empty">
+                  <div class="chart-empty-icon">&#128683;</div>No providers selected.
+                </div>
+                <canvas id="chart-fee"></canvas>
+              </div>
+
+              <!-- Chart 3: Scatter -->
+              <div class="chart-wrap" id="chart-scatter-wrap" style="display:none;">
+                <div class="chart-header">
+                  <div>
+                    <div class="chart-title">Star Rating vs Review Volume</div>
+                    <div class="chart-subtitle">Each dot is one course — hover for details</div>
+                  </div>
+                  <div class="export-btns"><button class="btn btn-ghost btn-sm"
+                      onclick="exportChart('chart-scatter','png')">PNG</button><button class="btn btn-ghost btn-sm"
+                      onclick="exportChart('chart-scatter','jpg')">JPG</button></div>
+                </div>
+                <div class="chart-filters">
+                  <div class="filter-group" style="flex:1;min-width:220px;"><label class="filter-label">Training
+                      Provider(s)</label>
+                    <div class="multiselect-wrap" id="scatter-provider-wrap">
+                      <div class="multiselect-trigger" id="scatter-provider-trigger"
+                        onclick="toggleMs('scatter-provider')"><span id="scatter-provider-label">All
+                          Providers</span><span class="ms-arrow">&#9662;</span></div>
+                      <div class="multiselect-dropdown" id="scatter-provider-dropdown" style="display:none;">
+                        <div class="ms-search-wrap"><input type="text" class="ms-search" placeholder="Search..."
+                            oninput="filterMsOpts('scatter-provider',this.value)"></div>
+                        <div class="ms-actions"><button class="ms-action-btn"
+                            onclick="msSelectAll('scatter-provider')">Select All</button><button class="ms-action-btn"
+                            onclick="msClearAll('scatter-provider')">Clear All</button></div>
+                        <div id="scatter-provider-options"></div>
+                        <div class="ms-footer" id="scatter-provider-footer"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="filter-group"><label class="filter-label">Min reviews</label><input type="number"
+                      id="scatter-min-reviews" value="0" min="0" oninput="renderScatterChart(allCourses)"></div>
+                  <div class="filter-group"><label class="filter-label">Min rating</label>
+                    <select id="scatter-min-rating" onchange="renderScatterChart(allCourses)">
+                      <option value="0" selected>Any</option>
+                      <option value="3">3+ stars</option>
+                      <option value="4">4+ stars</option>
+                      <option value="4.5">4.5+ stars</option>
+                    </select>
+                  </div>
+                  <div class="filter-group"><label class="filter-label">Max rating</label>
+                    <select id="scatter-max-rating" onchange="renderScatterChart(allCourses)">
+                      <option value="5" selected>Any</option>
+                      <option value="4.9">Under 5</option>
+                      <option value="4">Under 4</option>
+                      <option value="3">Under 3</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="chart-empty" id="chart-scatter-empty">
+                  <div class="chart-empty-icon">&#128683;</div>No rated courses match the current filters.
+                </div>
+                <canvas id="chart-scatter"></canvas>
+              </div>
+
+              <!-- Chart 4: Top rated -->
+              <div class="chart-wrap" id="chart-toprated-wrap" style="display:none;">
+                <div class="chart-header">
+                  <div>
+                    <div class="chart-title">Top Rated Courses</div>
+                    <div class="chart-subtitle">Courses ranked by star rating (min. reviews threshold applied)</div>
+                  </div>
+                  <div class="export-btns"><button class="btn btn-ghost btn-sm"
+                      onclick="exportChart('chart-toprated','png')">PNG</button><button class="btn btn-ghost btn-sm"
+                      onclick="exportChart('chart-toprated','jpg')">JPG</button></div>
+                </div>
+                <div class="chart-filters">
+                  <div class="filter-group" style="flex:1;min-width:220px;"><label class="filter-label">Training
+                      Provider(s)</label>
+                    <div class="multiselect-wrap" id="toprated-provider-wrap">
+                      <div class="multiselect-trigger" id="toprated-provider-trigger"
+                        onclick="toggleMs('toprated-provider')"><span id="toprated-provider-label">All
+                          Providers</span><span class="ms-arrow">&#9662;</span></div>
+                      <div class="multiselect-dropdown" id="toprated-provider-dropdown" style="display:none;">
+                        <div class="ms-search-wrap"><input type="text" class="ms-search" placeholder="Search..."
+                            oninput="filterMsOpts('toprated-provider',this.value)"></div>
+                        <div class="ms-actions"><button class="ms-action-btn"
+                            onclick="msSelectAll('toprated-provider')">Select All</button><button class="ms-action-btn"
+                            onclick="msClearAll('toprated-provider')">Clear All</button></div>
+                        <div id="toprated-provider-options"></div>
+                        <div class="ms-footer" id="toprated-provider-footer"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="filter-group"><label class="filter-label">Min reviews</label><input type="number"
+                      id="toprated-min-reviews" value="5" min="0" oninput="renderTopratedChart(allCourses)"></div>
+                  <div class="filter-group"><label class="filter-label">Show top</label>
+                    <select id="toprated-n" onchange="renderTopratedChart(allCourses)">
+                      <option value="10" selected>10</option>
+                      <option value="15">15</option>
+                      <option value="20">20</option>
+                    </select>
+                  </div>
+                  <div class="filter-group"><label class="filter-label">Sort by</label>
+                    <select id="toprated-sort" onchange="renderTopratedChart(allCourses)">
+                      <option value="rating" selected>Rating</option>
+                      <option value="reviews">Reviews</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="chart-empty" id="chart-toprated-empty">
+                  <div class="chart-empty-icon">&#128683;</div>No rated courses match the current filters.
+                </div>
+                <div id="chart-toprated-container" style="position:relative;height:260px;"><canvas
+                    id="chart-toprated"></canvas></div>
+              </div>
+
+              <!-- Chart 5: Fee vs Rating -->
+              <div class="chart-wrap" id="chart-feerating-wrap" style="display:none;">
+                <div class="chart-header">
+                  <div>
+                    <div class="chart-title">Course Fee vs Star Rating</div>
+                    <div class="chart-subtitle">Does price correlate with quality? — hover for details</div>
+                  </div>
+                  <div class="export-btns"><button class="btn btn-ghost btn-sm"
+                      onclick="exportChart('chart-feerating','png')">PNG</button><button class="btn btn-ghost btn-sm"
+                      onclick="exportChart('chart-feerating','jpg')">JPG</button></div>
+                </div>
+                <div class="chart-filters">
+                  <div class="filter-group" style="flex:1;min-width:220px;"><label class="filter-label">Training
+                      Provider(s)</label>
+                    <div class="multiselect-wrap" id="feerating-provider-wrap">
+                      <div class="multiselect-trigger" id="feerating-provider-trigger"
+                        onclick="toggleMs('feerating-provider')"><span id="feerating-provider-label">All
+                          Providers</span><span class="ms-arrow">&#9662;</span></div>
+                      <div class="multiselect-dropdown" id="feerating-provider-dropdown" style="display:none;">
+                        <div class="ms-search-wrap"><input type="text" class="ms-search" placeholder="Search..."
+                            oninput="filterMsOpts('feerating-provider',this.value)"></div>
+                        <div class="ms-actions"><button class="ms-action-btn"
+                            onclick="msSelectAll('feerating-provider')">Select All</button><button class="ms-action-btn"
+                            onclick="msClearAll('feerating-provider')">Clear All</button></div>
+                        <div id="feerating-provider-options"></div>
+                        <div class="ms-footer" id="feerating-provider-footer"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="filter-group"><label class="filter-label">Fee type</label>
+                    <select id="feerating-fee-type" onchange="renderFeeRatingChart(allCourses)">
+                      <option value="full" selected>Full Course Fee</option>
+                      <option value="nett">After SF Funding</option>
+                    </select>
+                  </div>
+                  <div class="filter-group"><label class="filter-label">Min reviews</label><input type="number"
+                      id="feerating-min-reviews" value="1" min="0" oninput="renderFeeRatingChart(allCourses)"></div>
+                  <div class="filter-group"><label class="filter-label">Max fee (SGD)</label><input type="number"
+                      id="feerating-max-fee" placeholder="No limit" min="0" oninput="renderFeeRatingChart(allCourses)">
+                  </div>
+                </div>
+                <div class="chart-empty" id="chart-feerating-empty">
+                  <div class="chart-empty-icon">&#128683;</div>No courses match the current filters.
+                </div>
+                <canvas id="chart-feerating"></canvas>
+              </div>
+            </div><!-- /tab-charts -->
+
+            <!-- TABLE TAB -->
+            <div class="tab-pane" id="tab-table">
+              <div class="filter-banner" id="filter-banner">
+                <span id="filter-banner-text"></span>
+                <button class="banner-clear" onclick="clearChartFilter()" title="Clear chart filter">&#10005;</button>
+              </div>
+              <div class="table-toolbar">
+                <input type="text" id="table-search" placeholder="&#128269; Filter by title or provider…"
+                  oninput="applyTableFilters()">
+                <select id="table-provider-filter" onchange="applyTableFilters()">
+                  <option value="">All Providers</option>
+                </select>
+                <select id="table-sort" onchange="applyTableFilters()">
+                  <option value="">Default order</option>
+                  <option value="rating-desc">Rating &#9660;</option>
+                  <option value="rating-asc">Rating &#9650;</option>
+                  <option value="fee-asc">Fee &#9650;</option>
+                  <option value="fee-desc">Fee &#9660;</option>
+                  <option value="reviews-desc">Reviews &#9660;</option>
+                </select>
+              </div>
+              <div class="table-info" id="table-info"></div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Course Title</th>
+                      <th>Provider</th>
+                      <th>Full Fee</th>
+                      <th>After SF Funding</th>
+                      <th>Rating</th>
+                      <th>Reviews</th>
+                      <th>Next Date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="data-tbody">
+                    <tr>
+                      <td colspan="8" class="no-data">No data loaded</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="pagination" id="table-pagination"></div>
             </div>
-            <div class="filter-group"><label class="filter-label">Fee type</label>
-              <select id="feerating-fee-type" onchange="renderFeeRatingChart(allCourses)"><option value="full" selected>Full Course Fee</option><option value="nett">After SF Funding</option></select>
-            </div>
-            <div class="filter-group"><label class="filter-label">Min reviews</label><input type="number" id="feerating-min-reviews" value="1" min="0" oninput="renderFeeRatingChart(allCourses)"></div>
-            <div class="filter-group"><label class="filter-label">Max fee (SGD)</label><input type="number" id="feerating-max-fee" placeholder="No limit" min="0" oninput="renderFeeRatingChart(allCourses)"></div>
+
           </div>
-          <div class="chart-empty" id="chart-feerating-empty"><div class="chart-empty-icon">&#128683;</div>No courses match the current filters.</div>
-          <canvas id="chart-feerating"></canvas>
         </div>
-      </div><!-- /tab-charts -->
+      </div><!-- /right -->
+    </div><!-- /main-grid -->
+  </div><!-- /app -->
 
-      <!-- TABLE TAB -->
-      <div class="tab-pane" id="tab-table">
-        <div class="filter-banner" id="filter-banner">
-          <span id="filter-banner-text"></span>
-          <button class="banner-clear" onclick="clearChartFilter()" title="Clear chart filter">&#10005;</button>
-        </div>
-        <div class="table-toolbar">
-          <input type="text" id="table-search" placeholder="&#128269; Filter by title or provider…" oninput="applyTableFilters()">
-          <select id="table-provider-filter" onchange="applyTableFilters()"><option value="">All Providers</option></select>
-          <select id="table-sort" onchange="applyTableFilters()">
-            <option value="">Default order</option>
-            <option value="rating-desc">Rating &#9660;</option><option value="rating-asc">Rating &#9650;</option>
-            <option value="fee-asc">Fee &#9650;</option><option value="fee-desc">Fee &#9660;</option>
-            <option value="reviews-desc">Reviews &#9660;</option>
-          </select>
-        </div>
-        <div class="table-info" id="table-info"></div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr>
-              <th>#</th><th>Course Title</th><th>Provider</th>
-              <th>Full Fee</th><th>After SF Funding</th>
-              <th>Rating</th><th>Reviews</th><th>Next Date</th>
-            </tr></thead>
-            <tbody id="data-tbody"><tr><td colspan="8" class="no-data">No data loaded</td></tr></tbody>
-          </table>
-        </div>
-        <div class="pagination" id="table-pagination"></div>
-      </div>
+  <script>
+    /* ══ STATE ══════════════════════════════════════════════════ */
+    var currentJobId = null, currentSSE = null, activeKeyword = null, allCourses = [], chartInstances = {};
+    var ALL_MS = ['fee-provider', 'scatter-provider', 'toprated-provider', 'feerating-provider'];
+    var _tableData = [], _tableFiltered = [], _tablePage = 1, _tablePageSize = 20;
+    var _chartFilter = null; // {label, fn(course)->bool}
+    var _feeBinMeta = [];    // populated by renderFeeChart for click handler
 
-    </div>
-  </div>
-</div><!-- /right -->
-</div><!-- /main-grid -->
-</div><!-- /app -->
-
-<script>
-/* ══ STATE ══════════════════════════════════════════════════ */
-var currentJobId=null,currentSSE=null,activeKeyword=null,allCourses=[],chartInstances={};
-var ALL_MS=['fee-provider','scatter-provider','toprated-provider','feerating-provider'];
-var _tableData=[], _tableFiltered=[], _tablePage=1, _tablePageSize=20;
-var _chartFilter=null; // {label, fn(course)->bool}
-var _feeBinMeta=[];    // populated by renderFeeChart for click handler
-
-/* ══ THEME ══════════════════════════════════════════════════ */
-function toggleTheme(){
-  var html=document.documentElement;
-  var isDark=html.getAttribute('data-theme')==='dark';
-  html.setAttribute('data-theme',isDark?'light':'dark');
-  document.getElementById('theme-icon').textContent=isDark?'☀️':'🌙';
-  document.getElementById('theme-label').textContent=isDark?'Light Mode':'Dark Mode';
-  localStorage.setItem('sf-theme',isDark?'light':'dark');
-  if(allCourses.length)renderCharts(allCourses);
-}
-(function initTheme(){
-  var t=localStorage.getItem('sf-theme')||'dark';
-  document.documentElement.setAttribute('data-theme',t);
-  if(t==='light'){document.getElementById('theme-icon').textContent='☀️';document.getElementById('theme-label').textContent='Light Mode';}
-})();
-
-/* ══ CHART DEFAULTS ═════════════════════════════════════════ */
-function applyChartDefaults(){
-  var s=getComputedStyle(document.documentElement);
-  Chart.defaults.color=s.getPropertyValue('--chart-tick').trim();
-  Chart.defaults.borderColor=s.getPropertyValue('--chart-grid').trim();
-  Chart.defaults.font.family="'Space Mono',monospace";
-  Chart.defaults.font.size=11;
-  Chart.defaults.plugins.legend.labels.boxWidth=10;
-}
-
-/* ══ MAX PAGES BADGE ════════════════════════════════════════ */
-function updateMaxPagesBadge(v){
-  var b=document.getElementById('max-pages-badge'),n=parseInt(v);
-  if(v===''||isNaN(n)||n<=0){b.textContent='ALL PAGES';b.className='max-pages-badge all';}
-  else{b.textContent=n+' PAGE'+(n===1?'':'S');b.className='max-pages-badge paged';}
-}
-updateMaxPagesBadge('');
-
-/* ══ TABS ═══════════════════════════════════════════════════ */
-function switchTab(name,btn){
-  document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('active');});
-  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
-  document.getElementById('tab-'+name).classList.add('active');
-  if(btn)btn.classList.add('active');
-}
-
-/* ══ CHART→TABLE CLICK-FILTER ═══════════════════════════════ */
-function jumpToTable(label, filterFn){
-  _chartFilter={label:label,fn:filterFn};
-  var banner=document.getElementById('filter-banner');
-  banner.className='filter-banner show';
-  document.getElementById('filter-banner-text').textContent='Filtered: '+label;
-  switchTab('table',document.getElementById('table-tab-btn'));
-  _tablePage=1;
-  applyTableFilters();
-  setTimeout(function(){
-    var tw=document.querySelector('.table-wrap');
-    if(tw){tw.classList.remove('filter-flash');void tw.offsetWidth;tw.classList.add('filter-flash');}
-    document.getElementById('tab-table').scrollIntoView({behavior:'smooth',block:'start'});
-  },80);
-}
-function clearChartFilter(){
-  _chartFilter=null;
-  document.getElementById('filter-banner').className='filter-banner';
-  _tablePage=1;
-  applyTableFilters();
-}
-
-/* ══ CHART EMPTY STATE ══════════════════════════════════════ */
-function showChartEmpty(wrapId,emptyId,canvasId,useContainer){
-  document.getElementById(wrapId).style.display='block';
-  document.getElementById(emptyId).style.display='block';
-  var t=useContainer?document.getElementById(canvasId+'-container'):document.getElementById(canvasId);
-  if(t)t.style.display='none';
-}
-function showChartCanvas(wrapId,emptyId,canvasId,useContainer){
-  document.getElementById(wrapId).style.display='block';
-  document.getElementById(emptyId).style.display='none';
-  var t=useContainer?document.getElementById(canvasId+'-container'):document.getElementById(canvasId);
-  if(t)t.style.display='';
-}
-
-/* ══ MULTISELECT ════════════════════════════════════════════ */
-document.addEventListener('click',function(e){
-  ALL_MS.forEach(function(id){var w=document.getElementById(id+'-wrap');if(w&&!w.contains(e.target)){var d=document.getElementById(id+'-dropdown');if(d)d.style.display='none';}});
-});
-function toggleMs(id){
-  var dd=document.getElementById(id+'-dropdown');if(!dd)return;
-  var open=dd.style.display!=='none';
-  ALL_MS.forEach(function(o){var d=document.getElementById(o+'-dropdown');if(d)d.style.display='none';});
-  if(!open)dd.style.display='block';
-}
-function filterMsOpts(id,q){
-  document.querySelectorAll('#'+id+'-options .ms-option').forEach(function(o){
-    var t=o.querySelector('span')?o.querySelector('span').textContent.toLowerCase():'';
-    o.classList.toggle('ms-hidden',q.length>0&&t.indexOf(q.toLowerCase())<0);
-  });
-}
-function msSelectAll(id){document.querySelectorAll('#'+id+'-options .ms-option input').forEach(function(c){c.checked=true;});updateMsLabel(id);triggerMsChart(id);}
-function msClearAll(id){document.querySelectorAll('#'+id+'-options .ms-option input').forEach(function(c){c.checked=false;});updateMsLabel(id);triggerMsChart(id);}
-function onMsChange(id){updateMsLabel(id);triggerMsChart(id);}
-function triggerMsChart(id){
-  var m={'fee-provider':renderFeeChart,'scatter-provider':renderScatterChart,'toprated-provider':renderTopratedChart,'feerating-provider':renderFeeRatingChart};
-  if(m[id])m[id](allCourses);
-}
-function updateMsLabel(id){
-  var boxes=document.querySelectorAll('#'+id+'-options .ms-option input');
-  var chk=Array.from(boxes).filter(function(b){return b.checked;});
-  var lbl=document.getElementById(id+'-label'),ft=document.getElementById(id+'-footer');
-  if(!lbl)return;
-  if(chk.length===0)lbl.textContent='None selected';
-  else if(chk.length===boxes.length)lbl.textContent='All Providers';
-  else if(chk.length===1)lbl.textContent=chk[0].closest('.ms-option').querySelector('span').textContent;
-  else lbl.textContent=chk.length+' providers selected';
-  if(ft)ft.textContent=chk.length+' of '+boxes.length+' selected';
-}
-function buildMsOptions(id,providers){
-  var c=document.getElementById(id+'-options');if(!c)return;
-  c.innerHTML=providers.map(function(p){return '<label class="ms-option"><input type="checkbox" value="'+escHtml(p)+'" checked onchange="onMsChange(\''+id+'\')"><span>'+escHtml(truncate(p,44))+'</span></label>';}).join('');
-  updateMsLabel(id);
-}
-function getMsChecked(id){
-  var boxes=document.querySelectorAll('#'+id+'-options .ms-option input');
-  var chk=Array.from(boxes).filter(function(b){return b.checked;}).map(function(b){return b.value;});
-  return chk.length===boxes.length?null:chk;
-}
-function filterByMs(courses,id){
-  var sel=getMsChecked(id);if(!sel)return courses;
-  var s=new Set(sel);
-  return courses.filter(function(c){return s.has(c['Training Provider']||'Unknown');});
-}
-function populateAllFilters(courses){
-  var provs=Array.from(new Set(courses.map(function(c){return c['Training Provider']||'Unknown';}))).sort();
-  ALL_MS.forEach(function(id){buildMsOptions(id,provs);var l=document.getElementById(id+'-label');if(l)l.textContent='All Providers';});
-  var tpf=document.getElementById('table-provider-filter');
-  if(tpf)tpf.innerHTML='<option value="">All Providers</option>'+provs.map(function(p){return '<option value="'+escHtml(p)+'">'+escHtml(truncate(p,50))+'</option>';}).join('');
-}
-
-/* ══ SCRAPING ═══════════════════════════════════════════════ */
-async function handleScrapeClick(){
-  var kw=document.getElementById('keyword-input').value.trim();
-  if(!kw){showError('Please enter a search keyword.');return;}
-  hideError();document.getElementById('conflict-panel').style.display='none';
-  var chk=await fetch('/api/check/'+encodeURIComponent(kw)).then(function(r){return r.json();});
-  if(chk.exists){document.getElementById('conflict-msg').textContent='"'+kw+'" already has '+chk.count+' courses stored. What would you like to do?';document.getElementById('conflict-panel').style.display='block';return;}
-  startScrape('overwrite');
-}
-function viewExisting(){var kw=document.getElementById('keyword-input').value.trim();document.getElementById('conflict-panel').style.display='none';loadKeywordData(kw);}
-async function startScrape(mode){
-  var kw=document.getElementById('keyword-input').value.trim();
-  var raw=document.getElementById('max-pages-input').value;
-  var maxPages=(raw===''||parseInt(raw)<=0)?0:parseInt(raw);
-  document.getElementById('conflict-panel').style.display='none';
-  if(!kw){showError('Please enter a search keyword.');return;}
-  var res;
-  try{res=await fetch('/api/scrape/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({keyword:kw,max_pages:maxPages,mode:mode})});}
-  catch(e){showError('Could not reach the server. Is Flask running?');return;}
-  var data=await res.json();if(data.error){showError(data.error);return;}
-  currentJobId=data.job_id;activeKeyword=kw;
-  document.getElementById('scrape-btn').disabled=true;
-  document.getElementById('progress-section').style.display='block';
-  subscribeProgress(currentJobId);
-}
-function subscribeProgress(jobId){
-  if(currentSSE)currentSSE.close();
-  currentSSE=new EventSource('/api/scrape/progress/'+jobId);
-  currentSSE.onmessage=function(e){
-    var d=JSON.parse(e.data);updateProgress(d);
-    if(['completed','error','no_results'].indexOf(d.status)>=0){currentSSE.close();document.getElementById('scrape-btn').disabled=false;if(d.status==='completed'){loadKeywordData(activeKeyword);}}
-  };
-  currentSSE.onerror=function(){updateProgress({status:'error',message:'Connection lost.',pages_done:0,total:0,count:0,warnings:[],error:'SSE disconnected'});currentSSE.close();document.getElementById('scrape-btn').disabled=false;};
-}
-function updateProgress(d){
-  var sa=d.scrape_all,pct=sa?100:(d.total>0?Math.round(d.pages_done/d.total*100):0);
-  var fill=document.getElementById('progress-fill');
-  fill.style.width=pct+'%';
-  if(sa&&d.status==='running'){fill.style.animation='indeterminate 1.5s ease infinite';fill.style.backgroundSize='200% 100%';}else fill.style.animation='';
-  document.getElementById('progress-text').textContent=sa?('Page '+d.pages_done+' (all pages mode)'):('Page '+d.pages_done+' of '+d.total);
-  document.getElementById('progress-pct').textContent=sa?(d.pages_done+' pages'):(pct+'%');
-  document.getElementById('progress-msg').textContent=d.message||'';
-  var badge=document.getElementById('status-badge');
-  var sm={running:['status-running','Running'],completed:['status-completed','Completed'],error:['status-error','Error'],no_results:['status-no_results','No Results'],queued:['status-running','Queued']}[d.status]||['status-running',d.status];
-  badge.className='status-badge tag '+sm[0];badge.innerHTML=(d.status==='running'?'<span class="pulse"></span>':'')+sm[1];
-  if(d.warnings&&d.warnings.length)document.getElementById('warnings-list').innerHTML='<div style="font-size:11px;color:var(--warning);margin-bottom:6px;font-family:\'Space Mono\',monospace;">WARNINGS</div>'+d.warnings.map(function(w){return '<div class="warning-item">'+escHtml(w)+'</div>';}).join('');
-  if(d.status==='completed'){fill.style.animation='';fill.style.width='100%';}
-  if(d.status==='error')showError(d.error||'Unknown error');
-  if(d.status==='no_results')showError('No courses found. Try a broader search term.');
-}
-
-/* ══ DATA / DASHBOARD ═══════════════════════════════════════ */
-async function loadKeywordData(kw){
-  try{
-    var res=await fetch('/api/data/'+encodeURIComponent(kw));
-    if(!res.ok){showError('No data found for this keyword.');return;}
-    allCourses=await res.json();activeKeyword=kw;
-    document.getElementById('keyword-input').value=kw;
-    renderDashboard(allCourses,kw);
-  }catch(e){showError('Failed to load data.');}
-}
-function clearDashboard(){
-  document.getElementById('no-data-msg').style.display='block';
-  ['chart-provider-wrap','chart-fee-wrap','chart-scatter-wrap','chart-toprated-wrap','chart-feerating-wrap'].forEach(function(id){document.getElementById(id).style.display='none';});
-  document.getElementById('export-excel-btn').style.display='none';
-  document.getElementById('dash-keyword').textContent='No data loaded';
-  document.getElementById('data-tbody').innerHTML='<tr><td colspan="8" class="no-data">No data loaded</td></tr>';
-  document.getElementById('cred-total').textContent='--';document.getElementById('cred-time').textContent='--';
-}
-function renderDashboard(courses,kw){
-  document.getElementById('no-data-msg').style.display='none';
-  document.getElementById('dash-keyword').textContent=kw;
-  document.getElementById('export-excel-btn').style.display='inline-flex';
-  document.getElementById('cred-total').textContent=courses.length;
-  var ts=courses.find(function(c){return c['Scraped At'];});
-  if(ts)document.getElementById('cred-time').textContent=new Date(ts['Scraped At']).toLocaleString('en-SG');
-  populateAllFilters(courses);
-  _tableData=courses;_tablePage=1;_chartFilter=null;
-  document.getElementById('filter-banner').className='filter-banner';
-  renderCharts(courses);
-  applyTableFilters();
-}
-
-/* ══ CHARTS ═════════════════════════════════════════════════ */
-function destroyChart(id){if(chartInstances[id]){chartInstances[id].destroy();delete chartInstances[id];}}
-function renderCharts(c){applyChartDefaults();renderProviderChart(c);renderFeeChart(c);renderScatterChart(c);renderTopratedChart(c);renderFeeRatingChart(c);}
-
-/* Chart 1: Provider — click filters table by provider */
-function renderProviderChart(courses){
-  destroyChart('chart-provider');
-  var topN=parseInt(document.getElementById('provider-top-n').value||15);
-  var sort=document.getElementById('provider-sort').value||'desc';
-  var minC=parseInt(document.getElementById('provider-min-count').value||1);
-  var countMap={};
-  courses.forEach(function(c){var p=c['Training Provider']||'Unknown';countMap[p]=(countMap[p]||0)+1;});
-  var entries=Object.entries(countMap).filter(function(e){return e[1]>=minC;});
-  if(sort==='desc')entries.sort(function(a,b){return b[1]-a[1];});
-  else if(sort==='asc')entries.sort(function(a,b){return a[1]-b[1];});
-  else entries.sort(function(a,b){return a[0].localeCompare(b[0]);});
-  if(topN<999)entries=entries.slice(0,topN);
-  var labels=entries.map(function(x){return truncate(x[0],32);});
-  var data=entries.map(function(x){return x[1];});
-  var palette=data.map(function(_,i){return 'hsl('+(185+i*(160/Math.max(data.length,1)))+',75%,'+(58-i*.8)+'%)';});
-  document.getElementById('chart-provider-wrap').style.display='block';
-  var h=Math.max(280,entries.length*28);
-  document.getElementById('chart-provider-container').style.height=h+'px';
-  var ctx=document.getElementById('chart-provider').getContext('2d');
-  chartInstances['chart-provider']=new Chart(ctx,{
-    type:'bar',
-    data:{labels:labels,datasets:[{label:'Courses',data:data,backgroundColor:palette,borderRadius:5,borderSkipped:false}]},
-    options:{
-      indexAxis:'y',responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{title:function(items){return entries[items[0].dataIndex]?entries[items[0].dataIndex][0]:'';},label:function(ctx){return ' '+ctx.raw+' course(s)';}}},},
-      scales:{x:{grid:{color:'var(--chart-grid)'},ticks:{color:'var(--chart-tick)'}},y:{grid:{display:false},ticks:{color:'var(--chart-label)',font:{size:11}}}},
-      onClick:function(evt,items){
-        if(!items.length)return;
-        var provName=entries[items[0].index][0];
-        var cnt=entries[items[0].index][1];
-        jumpToTable(provName+' ('+cnt+' courses)',function(c){return (c['Training Provider']||'Unknown')===provName;});
-      }
+    /* ══ THEME ══════════════════════════════════════════════════ */
+    function toggleTheme() {
+      var html = document.documentElement;
+      var isDark = html.getAttribute('data-theme') === 'dark';
+      html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      document.getElementById('theme-icon').textContent = isDark ? '☀️' : '🌙';
+      document.getElementById('theme-label').textContent = isDark ? 'Light Mode' : 'Dark Mode';
+      localStorage.setItem('sf-theme', isDark ? 'light' : 'dark');
+      if (allCourses.length) renderCharts(allCourses);
     }
-  });
-  document.getElementById('chart-provider').style.cursor='pointer';
-}
+    (function initTheme() {
+      var t = localStorage.getItem('sf-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+      if (t === 'light') { document.getElementById('theme-icon').textContent = '☀️'; document.getElementById('theme-label').textContent = 'Light Mode'; }
+    })();
 
-/* Chart 2: Fee distribution — click filters table by fee bin */
-function renderFeeChart(courses){
-  destroyChart('chart-fee');
-  var filtered=filterByMs(courses,'fee-provider');
-  if(filtered.length===0){showChartEmpty('chart-fee-wrap','chart-fee-empty','chart-fee',false);return;}
-  showChartCanvas('chart-fee-wrap','chart-fee-empty','chart-fee',false);
-  var feeType=document.getElementById('fee-type').value||'full';
-  var feeKey=feeType==='full'?'Full Course Fee':'After SkillsFuture Funding';
-  var binSetting=document.getElementById('fee-bin').value||'auto';
-  var maxFeeFilter=parseFloat(document.getElementById('fee-max').value)||Infinity;
-  /* Separate rows into those with parseable fees and N/A */
-  var naRows=filtered.filter(function(c){return isNaN(parseFloat((c[feeKey]||'').replace(/[^0-9.]/g,'')));});
-  var feeRows=filtered.filter(function(c){var v=parseFloat((c[feeKey]||'').replace(/[^0-9.]/g,''));return !isNaN(v)&&v>=0&&v<=maxFeeFilter;});
-  if(!feeRows.length&&!naRows.length){showChartEmpty('chart-fee-wrap','chart-fee-empty','chart-fee',false);return;}
-  var fees=feeRows.map(function(c){return parseFloat((c[feeKey]||'').replace(/[^0-9.]/g,''));});
-  var maxFee=fees.length?Math.max.apply(null,fees):0;
-  var binSize;
-  if(binSetting==='auto'){if(maxFee<=500)binSize=50;else if(maxFee<=2000)binSize=100;else if(maxFee<=5000)binSize=250;else binSize=500;}
-  else binSize=parseInt(binSetting);
-  binSize=binSize||50;
-  var numBins=Math.max(1,Math.ceil(maxFee/binSize)+1);
-  var binCounts=new Array(numBins).fill(0);
-  var binRows=[];for(var i=0;i<numBins;i++)binRows.push([]);
-  feeRows.forEach(function(c){var v=parseFloat((c[feeKey]||'').replace(/[^0-9.]/g,''));var idx=Math.floor(v/binSize);if(idx<numBins){binCounts[idx]++;binRows[idx].push(c);}});
-  var labels=binCounts.map(function(_,i){return i===0?('$0\u2013$'+binSize):('$'+(i*binSize)+'\u2013$'+((i+1)*binSize));});
-  var last=binCounts.length-1;while(last>0&&binCounts[last]===0)last--;
-  var tC=binCounts.slice(0,last+1),tL=labels.slice(0,last+1),tR=binRows.slice(0,last+1);
-  if(naRows.length){tL.push('N/A');tC.push(naRows.length);tR.push(naRows);}
-  /* Store for click handler */
-  _feeBinMeta=tR.map(function(rows,i){return {label:tL[i],rows:rows};});
-  var barColors=tC.map(function(_,i){return i===tC.length-1&&naRows.length?'rgba(107,116,148,0.7)':'rgba(124,77,255,0.75)';});
-  var ctx=document.getElementById('chart-fee').getContext('2d');
-  chartInstances['chart-fee']=new Chart(ctx,{
-    type:'bar',
-    data:{labels:tL,datasets:[{label:'Courses',data:tC,backgroundColor:barColors,borderColor:barColors.map(function(c){return c.replace(/0\.(75|7)\)/,'1)');}),borderWidth:1,borderRadius:4}]},
-    options:{
-      responsive:true,
-      plugins:{legend:{display:false},tooltip:{callbacks:{title:function(items){return tL[items[0].dataIndex];},label:function(ctx){return ' '+ctx.raw+' course(s)';}}},},
-      scales:{x:{grid:{color:'var(--chart-grid)'},ticks:{color:'var(--chart-label)',maxRotation:45}},y:{grid:{color:'var(--chart-grid)'},ticks:{color:'var(--chart-tick)'},title:{display:true,text:'Number of Courses',color:'var(--chart-tick)'}}},
-      onClick:function(evt,items){
-        if(!items.length)return;
-        var meta=_feeBinMeta[items[0].index];
-        if(!meta||!meta.rows.length)return;
-        var rowSet=new Set(meta.rows);
-        jumpToTable('Fee range: '+meta.label+' ('+meta.rows.length+' courses)',function(c){return rowSet.has(c);});
-      }
+    /* ══ CHART DEFAULTS ═════════════════════════════════════════ */
+    function applyChartDefaults() {
+      var s = getComputedStyle(document.documentElement);
+      Chart.defaults.color = s.getPropertyValue('--chart-tick').trim();
+      Chart.defaults.borderColor = s.getPropertyValue('--chart-grid').trim();
+      Chart.defaults.font.family = "'Space Mono',monospace";
+      Chart.defaults.font.size = 11;
+      Chart.defaults.plugins.legend.labels.boxWidth = 10;
     }
-  });
-  document.getElementById('chart-fee').style.cursor='pointer';
-}
 
-/* Chart 3: Scatter */
-function renderScatterChart(courses){
-  destroyChart('chart-scatter');
-  var filtered=filterByMs(courses,'scatter-provider');
-  var minRev=parseInt(document.getElementById('scatter-min-reviews').value||0);
-  var minRat=parseFloat(document.getElementById('scatter-min-rating').value||0);
-  var maxRat=parseFloat(document.getElementById('scatter-max-rating').value||5);
-  var provs=Array.from(new Set(filtered.map(function(c){return c['Training Provider']||'Unknown';}))).sort();
-  var pal=provs.map(function(_,i){return 'hsl('+((i*137)%360)+',70%,60%)';});
-  var pm={};provs.forEach(function(p,i){pm[p]=pal[i];});
-  var ds=provs.map(function(p){return {label:truncate(p,28),data:filtered.filter(function(c){return (c['Training Provider']||'Unknown')===p&&c['Star Rating']!=null&&(c['No. of Ratings']||0)>=minRev&&(c['Star Rating']||0)>=minRat&&(c['Star Rating']||0)<=maxRat;}).map(function(c){return {x:c['Star Rating'],y:c['No. of Ratings'],title:c['Course Title'],provider:p};}),backgroundColor:pm[p]+'aa',borderColor:pm[p],pointRadius:5,pointHoverRadius:8};}).filter(function(d){return d.data.length>0;});
-  if(!ds.length){showChartEmpty('chart-scatter-wrap','chart-scatter-empty','chart-scatter',false);return;}
-  showChartCanvas('chart-scatter-wrap','chart-scatter-empty','chart-scatter',false);
-  var ctx=document.getElementById('chart-scatter').getContext('2d');
-  chartInstances['chart-scatter']=new Chart(ctx,{type:'scatter',data:{datasets:ds},options:{responsive:true,plugins:{legend:{display:provs.length<=12,labels:{font:{size:10},boxWidth:8,padding:10}},tooltip:{callbacks:{label:function(ctx){return [truncate(ctx.raw.title||'',45),'Rating: '+ctx.raw.x+' star  Reviews: '+ctx.raw.y,'Provider: '+truncate(ctx.raw.provider||'',35)];}}}},scales:{x:{title:{display:true,text:'Star Rating',color:'var(--chart-tick)'},min:Math.max(0,minRat-.5),max:5.2,grid:{color:'var(--chart-grid)'},ticks:{color:'var(--chart-tick)'}},y:{title:{display:true,text:'Number of Reviews',color:'var(--chart-tick)'},grid:{color:'var(--chart-grid)'},ticks:{color:'var(--chart-tick)'}}}}});
-}
+    /* ══ MAX PAGES BADGE ════════════════════════════════════════ */
+    function updateMaxPagesBadge(v) {
+      var b = document.getElementById('max-pages-badge'), n = parseInt(v);
+      if (v === '' || isNaN(n) || n <= 0) { b.textContent = 'ALL PAGES'; b.className = 'max-pages-badge all'; }
+      else { b.textContent = n + ' PAGE' + (n === 1 ? '' : 'S'); b.className = 'max-pages-badge paged'; }
+    }
+    updateMaxPagesBadge('');
 
-/* Chart 4: Top rated */
-function renderTopratedChart(courses){
-  destroyChart('chart-toprated');
-  var filtered=filterByMs(courses,'toprated-provider');
-  var minRev=parseInt(document.getElementById('toprated-min-reviews').value||5);
-  var topN=parseInt(document.getElementById('toprated-n').value||10);
-  var sortBy=document.getElementById('toprated-sort').value||'rating';
-  var eligible=filtered.filter(function(c){return c['Star Rating']!=null&&(c['No. of Ratings']||0)>=minRev;}).sort(function(a,b){return sortBy==='reviews'?(b['No. of Ratings']-a['No. of Ratings']):((b['Star Rating']-a['Star Rating'])||(b['No. of Ratings']-a['No. of Ratings']));}).slice(0,topN);
-  if(!eligible.length){showChartEmpty('chart-toprated-wrap','chart-toprated-empty','chart-toprated',true);return;}
-  showChartCanvas('chart-toprated-wrap','chart-toprated-empty','chart-toprated',true);
-  var labels=eligible.map(function(c){return truncate(c['Course Title']||'--',36);});
-  var ratings=eligible.map(function(c){return c['Star Rating'];});
-  var reviews=eligible.map(function(c){return c['No. of Ratings']||0;});
-  var colors=ratings.map(function(r){return r>=4.5?'#00e5ff':r>=4?'#7c4dff':'#ff6b35';});
-  var h=Math.max(260,eligible.length*30);document.getElementById('chart-toprated-container').style.height=h+'px';
-  var ctx=document.getElementById('chart-toprated').getContext('2d');
-  chartInstances['chart-toprated']=new Chart(ctx,{type:'bar',data:{labels:labels,datasets:[{label:'Star Rating',data:ratings,backgroundColor:colors,borderRadius:5,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{title:function(items){return eligible[items[0].dataIndex]?eligible[items[0].dataIndex]['Course Title']:'';},label:function(ctx){return [' Rating: '+ctx.raw+' star',' Reviews: '+reviews[ctx.dataIndex],' Provider: '+truncate((eligible[ctx.dataIndex]?eligible[ctx.dataIndex]['Training Provider']:'')||'--',40)];}}}},scales:{x:{min:0,max:5,grid:{color:'var(--chart-grid)'},ticks:{color:'var(--chart-tick)'}},y:{grid:{display:false},ticks:{color:'var(--chart-label)',font:{size:11}}}}}});
-}
+    /* ══ TABS ═══════════════════════════════════════════════════ */
+    function switchTab(name, btn) {
+      document.querySelectorAll('.tab-pane').forEach(function (p) { p.classList.remove('active'); });
+      document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+      document.getElementById('tab-' + name).classList.add('active');
+      if (btn) btn.classList.add('active');
+    }
 
-/* Chart 5: Fee vs Rating scatter */
-function renderFeeRatingChart(courses){
-  destroyChart('chart-feerating');
-  var filtered=filterByMs(courses,'feerating-provider');
-  var feeType=document.getElementById('feerating-fee-type').value||'full';
-  var feeKey=feeType==='full'?'Full Course Fee':'After SkillsFuture Funding';
-  var minRev=parseInt(document.getElementById('feerating-min-reviews').value||1);
-  var maxFL=parseFloat(document.getElementById('feerating-max-fee').value)||Infinity;
-  var provs=Array.from(new Set(filtered.map(function(c){return c['Training Provider']||'Unknown';}))).sort();
-  var pal=provs.map(function(_,i){return 'hsl('+((i*113)%360)+',65%,58%)';});
-  var pm={};provs.forEach(function(p,i){pm[p]=pal[i];});
-  var ds=provs.map(function(p){var pts=filtered.filter(function(c){var fee=parseFloat((c[feeKey]||'').replace(/[^0-9.]/g,''));return (c['Training Provider']||'Unknown')===p&&!isNaN(fee)&&fee>=0&&fee<=maxFL&&c['Star Rating']!=null&&(c['No. of Ratings']||0)>=minRev;}).map(function(c){return {x:parseFloat((c[feeKey]||'').replace(/[^0-9.]/g,'')),y:c['Star Rating'],title:c['Course Title'],reviews:c['No. of Ratings']||0,provider:p};});return {label:truncate(p,28),data:pts,backgroundColor:pm[p]+'aa',borderColor:pm[p],pointRadius:5,pointHoverRadius:8};}).filter(function(d){return d.data.length>0;});
-  if(!ds.length){showChartEmpty('chart-feerating-wrap','chart-feerating-empty','chart-feerating',false);return;}
-  showChartCanvas('chart-feerating-wrap','chart-feerating-empty','chart-feerating',false);
-  var ctx=document.getElementById('chart-feerating').getContext('2d');
-  chartInstances['chart-feerating']=new Chart(ctx,{type:'scatter',data:{datasets:ds},options:{responsive:true,plugins:{legend:{display:provs.length<=12,labels:{font:{size:10},boxWidth:8,padding:10}},tooltip:{callbacks:{label:function(ctx){return [truncate(ctx.raw.title||'',45),'Fee: $'+ctx.raw.x.toLocaleString()+'  Rating: '+ctx.raw.y+' star','Reviews: '+ctx.raw.reviews+'  |  '+truncate(ctx.raw.provider||'',30)];}}}},scales:{x:{title:{display:true,text:'Course Fee (SGD)',color:'var(--chart-tick)'},grid:{color:'var(--chart-grid)'},ticks:{color:'var(--chart-tick)',callback:function(v){return '$'+v.toLocaleString();}}},y:{title:{display:true,text:'Star Rating',color:'var(--chart-tick)'},min:0,max:5.2,grid:{color:'var(--chart-grid)'},ticks:{color:'var(--chart-tick)'}}}}});
-}
+    /* ══ CHART→TABLE CLICK-FILTER ═══════════════════════════════ */
+    function jumpToTable(label, filterFn) {
+      _chartFilter = { label: label, fn: filterFn };
+      var banner = document.getElementById('filter-banner');
+      banner.className = 'filter-banner show';
+      document.getElementById('filter-banner-text').textContent = 'Filtered: ' + label;
+      switchTab('table', document.getElementById('table-tab-btn'));
+      _tablePage = 1;
+      applyTableFilters();
+      setTimeout(function () {
+        var tw = document.querySelector('.table-wrap');
+        if (tw) { tw.classList.remove('filter-flash'); void tw.offsetWidth; tw.classList.add('filter-flash'); }
+        document.getElementById('tab-table').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 80);
+    }
+    function clearChartFilter() {
+      _chartFilter = null;
+      document.getElementById('filter-banner').className = 'filter-banner';
+      _tablePage = 1;
+      applyTableFilters();
+    }
 
-/* ══ TABLE ══════════════════════════════════════════════════ */
-function applyTableFilters(){
-  var q=(document.getElementById('table-search').value||'').toLowerCase();
-  var prov=document.getElementById('table-provider-filter').value||'';
-  var sortVal=document.getElementById('table-sort').value||'';
-  var rows=_tableData.filter(function(c){
-    if(_chartFilter&&!_chartFilter.fn(c))return false;
-    var mQ=!q||(c['Course Title']||'').toLowerCase().indexOf(q)>=0||(c['Training Provider']||'').toLowerCase().indexOf(q)>=0;
-    var mP=!prov||(c['Training Provider']||'')===prov;
-    return mQ&&mP;
-  });
-  if(sortVal==='rating-desc')rows.sort(function(a,b){return (b['Star Rating']||0)-(a['Star Rating']||0);});
-  else if(sortVal==='rating-asc')rows.sort(function(a,b){return (a['Star Rating']||0)-(b['Star Rating']||0);});
-  else if(sortVal==='fee-asc')rows.sort(function(a,b){return parseFee(a['Full Course Fee'])-parseFee(b['Full Course Fee']);});
-  else if(sortVal==='fee-desc')rows.sort(function(a,b){return parseFee(b['Full Course Fee'])-parseFee(a['Full Course Fee']);});
-  else if(sortVal==='reviews-desc')rows.sort(function(a,b){return (b['No. of Ratings']||0)-(a['No. of Ratings']||0);});
-  _tableFiltered=rows;
-  var totalPages=Math.max(1,Math.ceil(rows.length/_tablePageSize));
-  if(_tablePage>totalPages)_tablePage=1;
-  renderTablePage();
-}
+    /* ══ CHART EMPTY STATE ══════════════════════════════════════ */
+    function showChartEmpty(wrapId, emptyId, canvasId, useContainer) {
+      document.getElementById(wrapId).style.display = 'block';
+      document.getElementById(emptyId).style.display = 'block';
+      var t = useContainer ? document.getElementById(canvasId + '-container') : document.getElementById(canvasId);
+      if (t) t.style.display = 'none';
+    }
+    function showChartCanvas(wrapId, emptyId, canvasId, useContainer) {
+      document.getElementById(wrapId).style.display = 'block';
+      document.getElementById(emptyId).style.display = 'none';
+      var t = useContainer ? document.getElementById(canvasId + '-container') : document.getElementById(canvasId);
+      if (t) t.style.display = '';
+    }
 
-function renderTablePage(){
-  var rows=_tableFiltered;
-  var total=rows.length;
-  var totalPages=Math.max(1,Math.ceil(total/_tablePageSize));
-  var start=(_tablePage-1)*_tablePageSize;
-  var page=rows.slice(start,start+_tablePageSize);
-  var stars=function(n){return n?('&#9733;'.repeat(Math.floor(n))+(n%1?'&#189;':'')):'&mdash;';};
-  var shown=total===0?0:start+1;
-  document.getElementById('table-info').textContent='Showing '+shown+'\u2013'+Math.min(start+_tablePageSize,total)+' of '+total+' course(s)';
-  document.getElementById('data-tbody').innerHTML=page.map(function(c,i){
-    return '<tr>'
-      +'<td style="color:var(--muted);font-family:\'Space Mono\',monospace;font-size:12px;">'+(start+i+1)+'</td>'
-      +'<td><a href="'+escHtml(c['Course URL']||'#')+'" target="_blank">'+escHtml(c['Course Title']||'--')+'</a></td>'
-      +'<td>'+escHtml(c['Training Provider']||'--')+'</td>'
-      +'<td style="font-family:\'Space Mono\',monospace;font-size:12px;white-space:nowrap;">'+escHtml(c['Full Course Fee']||'N/A')+'</td>'
-      +'<td style="font-family:\'Space Mono\',monospace;font-size:12px;color:var(--success);white-space:nowrap;">'+escHtml(c['After SkillsFuture Funding']||'N/A')+'</td>'
-      +'<td class="stars">'+stars(c['Star Rating'])+'</td>'
-      +'<td style="color:var(--muted);font-family:\'Space Mono\',monospace;font-size:12px;">'+(c['No. of Ratings']||0)+'</td>'
-      +'<td style="font-size:12px;color:var(--muted);">'+escHtml(c['Upcoming Course Date']||'--')+'</td>'
-      +'</tr>';
-  }).join('')||'<tr><td colspan="8" class="no-data">No matching results</td></tr>';
-  renderPagination(totalPages);
-}
+    /* ══ MULTISELECT ════════════════════════════════════════════ */
+    document.addEventListener('click', function (e) {
+      ALL_MS.forEach(function (id) { var w = document.getElementById(id + '-wrap'); if (w && !w.contains(e.target)) { var d = document.getElementById(id + '-dropdown'); if (d) d.style.display = 'none'; } });
+    });
+    function toggleMs(id) {
+      var dd = document.getElementById(id + '-dropdown'); if (!dd) return;
+      var open = dd.style.display !== 'none';
+      ALL_MS.forEach(function (o) { var d = document.getElementById(o + '-dropdown'); if (d) d.style.display = 'none'; });
+      if (!open) dd.style.display = 'block';
+    }
+    function filterMsOpts(id, q) {
+      document.querySelectorAll('#' + id + '-options .ms-option').forEach(function (o) {
+        var t = o.querySelector('span') ? o.querySelector('span').textContent.toLowerCase() : '';
+        o.classList.toggle('ms-hidden', q.length > 0 && t.indexOf(q.toLowerCase()) < 0);
+      });
+    }
+    function msSelectAll(id) { document.querySelectorAll('#' + id + '-options .ms-option input').forEach(function (c) { c.checked = true; }); updateMsLabel(id); triggerMsChart(id); }
+    function msClearAll(id) { document.querySelectorAll('#' + id + '-options .ms-option input').forEach(function (c) { c.checked = false; }); updateMsLabel(id); triggerMsChart(id); }
+    function onMsChange(id) { updateMsLabel(id); triggerMsChart(id); }
+    function triggerMsChart(id) {
+      var m = { 'fee-provider': renderFeeChart, 'scatter-provider': renderScatterChart, 'toprated-provider': renderTopratedChart, 'feerating-provider': renderFeeRatingChart };
+      if (m[id]) m[id](allCourses);
+    }
+    function updateMsLabel(id) {
+      var boxes = document.querySelectorAll('#' + id + '-options .ms-option input');
+      var chk = Array.from(boxes).filter(function (b) { return b.checked; });
+      var lbl = document.getElementById(id + '-label'), ft = document.getElementById(id + '-footer');
+      if (!lbl) return;
+      if (chk.length === 0) lbl.textContent = 'None selected';
+      else if (chk.length === boxes.length) lbl.textContent = 'All Providers';
+      else if (chk.length === 1) lbl.textContent = chk[0].closest('.ms-option').querySelector('span').textContent;
+      else lbl.textContent = chk.length + ' providers selected';
+      if (ft) ft.textContent = chk.length + ' of ' + boxes.length + ' selected';
+    }
+    function buildMsOptions(id, providers) {
+      var c = document.getElementById(id + '-options'); if (!c) return;
+      c.innerHTML = providers.map(function (p) { return '<label class="ms-option"><input type="checkbox" value="' + escHtml(p) + '" checked onchange="onMsChange(\'' + id + '\')"><span>' + escHtml(truncate(p, 44)) + '</span></label>'; }).join('');
+      updateMsLabel(id);
+    }
+    function getMsChecked(id) {
+      var boxes = document.querySelectorAll('#' + id + '-options .ms-option input');
+      var chk = Array.from(boxes).filter(function (b) { return b.checked; }).map(function (b) { return b.value; });
+      return chk.length === boxes.length ? null : chk;
+    }
+    function filterByMs(courses, id) {
+      var sel = getMsChecked(id); if (!sel) return courses;
+      var s = new Set(sel);
+      return courses.filter(function (c) { return s.has(c['Training Provider'] || 'Unknown'); });
+    }
+    function populateAllFilters(courses) {
+      var provs = Array.from(new Set(courses.map(function (c) { return c['Training Provider'] || 'Unknown'; }))).sort();
+      ALL_MS.forEach(function (id) { buildMsOptions(id, provs); var l = document.getElementById(id + '-label'); if (l) l.textContent = 'All Providers'; });
+      var tpf = document.getElementById('table-provider-filter');
+      if (tpf) tpf.innerHTML = '<option value="">All Providers</option>' + provs.map(function (p) { return '<option value="' + escHtml(p) + '">' + escHtml(truncate(p, 50)) + '</option>'; }).join('');
+    }
 
-function renderPagination(totalPages){
-  var el=document.getElementById('table-pagination');
-  if(totalPages<=1){el.innerHTML='';return;}
-  var cur=_tablePage,html='';
-  html+='<button class="page-btn" onclick="gotoPage('+(cur-1)+')" '+(cur===1?'disabled':'')+'>&#8249;</button>';
-  for(var i=1;i<=totalPages;i++){
-    if(totalPages>8&&i>2&&i<totalPages-1&&Math.abs(i-cur)>1){if(i===3||i===totalPages-2)html+='<span class="page-info">&hellip;</span>';continue;}
-    html+='<button class="page-btn'+(i===cur?' active':'')+'" onclick="gotoPage('+i+')">'+i+'</button>';
-  }
-  html+='<button class="page-btn" onclick="gotoPage('+(cur+1)+')" '+(cur===totalPages?'disabled':'')+'>&#8250;</button>';
-  html+='<span class="page-info">Page '+cur+' of '+totalPages+'</span>';
-  el.innerHTML=html;
-}
-function gotoPage(p){_tablePage=p;renderTablePage();}
+    /* ══ SCRAPING ═══════════════════════════════════════════════ */
+    async function handleScrapeClick() {
+      var kw = document.getElementById('keyword-input').value.trim();
+      if (!kw) { showError('Please enter a search keyword.'); return; }
+      hideError(); document.getElementById('conflict-panel').style.display = 'none';
+      var chk = await fetch('/api/check/' + encodeURIComponent(kw)).then(function (r) { return r.json(); });
+      if (chk.exists) { document.getElementById('conflict-msg').textContent = '"' + kw + '" already has ' + chk.count + ' courses stored. What would you like to do?'; document.getElementById('conflict-panel').style.display = 'block'; return; }
+      startScrape('overwrite');
+    }
+    function viewExisting() { var kw = document.getElementById('keyword-input').value.trim(); document.getElementById('conflict-panel').style.display = 'none'; loadKeywordData(kw); }
+    async function startScrape(mode) {
+      var kw = document.getElementById('keyword-input').value.trim();
+      var raw = document.getElementById('max-pages-input').value;
+      var maxPages = (raw === '' || parseInt(raw) <= 0) ? 0 : parseInt(raw);
+      document.getElementById('conflict-panel').style.display = 'none';
+      if (!kw) { showError('Please enter a search keyword.'); return; }
+      var res;
+      try { res = await fetch('/api/scrape/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ keyword: kw, max_pages: maxPages, mode: mode }) }); }
+      catch (e) { showError('Could not reach the server. Is Flask running?'); return; }
+      var data = await res.json(); if (data.error) { showError(data.error); return; }
+      currentJobId = data.job_id; activeKeyword = kw;
+      document.getElementById('scrape-btn').disabled = true;
+      document.getElementById('progress-section').style.display = 'block';
+      subscribeProgress(currentJobId);
+    }
+    function subscribeProgress(jobId) {
+      if (currentSSE) currentSSE.close();
+      currentSSE = new EventSource('/api/scrape/progress/' + jobId);
+      currentSSE.onmessage = function (e) {
+        var d = JSON.parse(e.data); updateProgress(d);
+        if (['completed', 'error', 'no_results'].indexOf(d.status) >= 0) { currentSSE.close(); document.getElementById('scrape-btn').disabled = false; if (d.status === 'completed') { loadKeywordData(activeKeyword); } }
+      };
+      currentSSE.onerror = function () { updateProgress({ status: 'error', message: 'Connection lost.', pages_done: 0, total: 0, count: 0, warnings: [], error: 'SSE disconnected' }); currentSSE.close(); document.getElementById('scrape-btn').disabled = false; };
+    }
+    function updateProgress(d) {
+      var sa = d.scrape_all, pct = sa ? 100 : (d.total > 0 ? Math.round(d.pages_done / d.total * 100) : 0);
+      var fill = document.getElementById('progress-fill');
+      fill.style.width = pct + '%';
+      if (sa && d.status === 'running') { fill.style.animation = 'indeterminate 1.5s ease infinite'; fill.style.backgroundSize = '200% 100%'; } else fill.style.animation = '';
+      document.getElementById('progress-text').textContent = sa ? ('Page ' + d.pages_done + ' (all pages mode)') : ('Page ' + d.pages_done + ' of ' + d.total);
+      document.getElementById('progress-pct').textContent = sa ? (d.pages_done + ' pages') : (pct + '%');
+      document.getElementById('progress-msg').textContent = d.message || '';
+      var badge = document.getElementById('status-badge');
+      var sm = { running: ['status-running', 'Running'], completed: ['status-completed', 'Completed'], error: ['status-error', 'Error'], no_results: ['status-no_results', 'No Results'], queued: ['status-running', 'Queued'] }[d.status] || ['status-running', d.status];
+      badge.className = 'status-badge tag ' + sm[0]; badge.innerHTML = (d.status === 'running' ? '<span class="pulse"></span>' : '') + sm[1];
+      if (d.warnings && d.warnings.length) document.getElementById('warnings-list').innerHTML = '<div style="font-size:11px;color:var(--warning);margin-bottom:6px;font-family:\'Space Mono\',monospace;">WARNINGS</div>' + d.warnings.map(function (w) { return '<div class="warning-item">' + escHtml(w) + '</div>'; }).join('');
+      if (d.status === 'completed') { fill.style.animation = ''; fill.style.width = '100%'; }
+      if (d.status === 'error') showError(d.error || 'Unknown error');
+      if (d.status === 'no_results') showError('No courses found. Try a broader search term.');
+    }
 
-/* ══ EXPORT ═════════════════════════════════════════════════ */
-function exportChart(canvasId,fmt){
-  var canvas=document.getElementById(canvasId);if(!canvas)return;
-  var tmp=document.createElement('canvas');tmp.width=canvas.width;tmp.height=canvas.height;
-  var tc=tmp.getContext('2d');
-  var bg=document.documentElement.getAttribute('data-theme')==='dark'?'#0d0f14':'#f0f4f8';
-  tc.fillStyle=fmt==='jpg'?bg:'transparent';
-  tc.fillRect(0,0,tmp.width,tmp.height);tc.drawImage(canvas,0,0);
-  var a=document.createElement('a');a.download=canvasId+'_'+(activeKeyword||'chart')+'.'+fmt;a.href=tmp.toDataURL(fmt==='jpg'?'image/jpeg':'image/png',.95);a.click();
-}
-function exportExcel(){if(!activeKeyword)return;window.location.href='/api/export/'+encodeURIComponent(activeKeyword);}
+    /* ══ DATA / DASHBOARD ═══════════════════════════════════════ */
+    async function loadKeywordData(kw) {
+      try {
+        var res = await fetch('/api/data/' + encodeURIComponent(kw));
+        if (!res.ok) { showError('No data found for this keyword.'); return; }
+        allCourses = await res.json(); activeKeyword = kw;
+        document.getElementById('keyword-input').value = kw;
+        renderDashboard(allCourses, kw);
+      } catch (e) { showError('Failed to load data.'); }
+    }
+    function clearDashboard() {
+      document.getElementById('no-data-msg').style.display = 'block';
+      ['chart-provider-wrap', 'chart-fee-wrap', 'chart-scatter-wrap', 'chart-toprated-wrap', 'chart-feerating-wrap'].forEach(function (id) { document.getElementById(id).style.display = 'none'; });
+      document.getElementById('export-excel-btn').style.display = 'none';
+      document.getElementById('dash-keyword').textContent = 'No data loaded';
+      document.getElementById('data-tbody').innerHTML = '<tr><td colspan="8" class="no-data">No data loaded</td></tr>';
+      document.getElementById('cred-total').textContent = '--'; document.getElementById('cred-time').textContent = '--';
+    }
+    function renderDashboard(courses, kw) {
+      document.getElementById('no-data-msg').style.display = 'none';
+      document.getElementById('dash-keyword').textContent = kw;
+      document.getElementById('export-excel-btn').style.display = 'inline-flex';
+      document.getElementById('cred-total').textContent = courses.length;
+      var ts = courses.find(function (c) { return c['Scraped At']; });
+      if (ts) document.getElementById('cred-time').textContent = new Date(ts['Scraped At']).toLocaleString('en-SG');
+      populateAllFilters(courses);
+      _tableData = courses; _tablePage = 1; _chartFilter = null;
+      document.getElementById('filter-banner').className = 'filter-banner';
+      renderCharts(courses);
+      applyTableFilters();
+    }
 
-/* ══ UTILS ══════════════════════════════════════════════════ */
-function parseFee(s){var v=parseFloat((s||'').replace(/[^0-9.]/g,''));return isNaN(v)?Infinity:v;}
-function showError(msg){var el=document.getElementById('scrape-error');el.textContent=msg;el.style.display='block';}
-function hideError(){document.getElementById('scrape-error').style.display='none';}
-function escHtml(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function truncate(s,n){s=String(s||'');return s.length>n?s.slice(0,n)+'\u2026':s;}
+    /* ══ CHARTS ═════════════════════════════════════════════════ */
+    function destroyChart(id) { if (chartInstances[id]) { chartInstances[id].destroy(); delete chartInstances[id]; } }
+    function renderCharts(c) { applyChartDefaults(); renderProviderChart(c); renderFeeChart(c); renderScatterChart(c); renderTopratedChart(c); renderFeeRatingChart(c); }
 
-/* ══ INIT ═══════════════════════════════════════════════════ */
-applyChartDefaults();
-document.getElementById('keyword-input').addEventListener('keydown',function(e){if(e.key==='Enter')handleScrapeClick();});
-</script>
+    /* Chart 1: Provider — click filters table by provider */
+    function renderProviderChart(courses) {
+      destroyChart('chart-provider');
+      var topN = parseInt(document.getElementById('provider-top-n').value || 15);
+      var sort = document.getElementById('provider-sort').value || 'desc';
+      var minC = parseInt(document.getElementById('provider-min-count').value || 1);
+      var countMap = {};
+      courses.forEach(function (c) { var p = c['Training Provider'] || 'Unknown'; countMap[p] = (countMap[p] || 0) + 1; });
+      var entries = Object.entries(countMap).filter(function (e) { return e[1] >= minC; });
+      if (sort === 'desc') entries.sort(function (a, b) { return b[1] - a[1]; });
+      else if (sort === 'asc') entries.sort(function (a, b) { return a[1] - b[1]; });
+      else entries.sort(function (a, b) { return a[0].localeCompare(b[0]); });
+      if (topN < 999) entries = entries.slice(0, topN);
+      var labels = entries.map(function (x) { return truncate(x[0], 32); });
+      var data = entries.map(function (x) { return x[1]; });
+      var palette = data.map(function (_, i) { return 'hsl(' + (185 + i * (160 / Math.max(data.length, 1))) + ',75%,' + (58 - i * .8) + '%)'; });
+      document.getElementById('chart-provider-wrap').style.display = 'block';
+      var h = Math.max(280, entries.length * 28);
+      document.getElementById('chart-provider-container').style.height = h + 'px';
+      var ctx = document.getElementById('chart-provider').getContext('2d');
+      chartInstances['chart-provider'] = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: labels, datasets: [{ label: 'Courses', data: data, backgroundColor: palette, borderRadius: 5, borderSkipped: false }] },
+        options: {
+          indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { callbacks: { title: function (items) { return entries[items[0].dataIndex] ? entries[items[0].dataIndex][0] : ''; }, label: function (ctx) { return ' ' + ctx.raw + ' course(s)'; } } }, },
+          scales: { x: { grid: { color: 'var(--chart-grid)' }, ticks: { color: 'var(--chart-tick)' } }, y: { grid: { display: false }, ticks: { color: 'var(--chart-label)', font: { size: 11 } } } },
+          onClick: function (evt, items) {
+            if (!items.length) return;
+            var provName = entries[items[0].index][0];
+            var cnt = entries[items[0].index][1];
+            jumpToTable(provName + ' (' + cnt + ' courses)', function (c) { return (c['Training Provider'] || 'Unknown') === provName; });
+          }
+        }
+      });
+      document.getElementById('chart-provider').style.cursor = 'pointer';
+    }
+
+    /* Chart 2: Fee distribution — click filters table by fee bin */
+    function renderFeeChart(courses) {
+      destroyChart('chart-fee');
+      var filtered = filterByMs(courses, 'fee-provider');
+      if (filtered.length === 0) { showChartEmpty('chart-fee-wrap', 'chart-fee-empty', 'chart-fee', false); return; }
+      showChartCanvas('chart-fee-wrap', 'chart-fee-empty', 'chart-fee', false);
+      var feeType = document.getElementById('fee-type').value || 'full';
+      var feeKey = feeType === 'full' ? 'Full Course Fee' : 'After SkillsFuture Funding';
+      var binSetting = document.getElementById('fee-bin').value || 'auto';
+      var maxFeeFilter = parseFloat(document.getElementById('fee-max').value) || Infinity;
+      /* Separate rows into those with parseable fees and N/A */
+      var naRows = filtered.filter(function (c) { return isNaN(parseFloat((c[feeKey] || '').replace(/[^0-9.]/g, ''))); });
+      var feeRows = filtered.filter(function (c) { var v = parseFloat((c[feeKey] || '').replace(/[^0-9.]/g, '')); return !isNaN(v) && v >= 0 && v <= maxFeeFilter; });
+      if (!feeRows.length && !naRows.length) { showChartEmpty('chart-fee-wrap', 'chart-fee-empty', 'chart-fee', false); return; }
+      var fees = feeRows.map(function (c) { return parseFloat((c[feeKey] || '').replace(/[^0-9.]/g, '')); });
+      var maxFee = fees.length ? Math.max.apply(null, fees) : 0;
+      var binSize;
+      if (binSetting === 'auto') { if (maxFee <= 500) binSize = 50; else if (maxFee <= 2000) binSize = 100; else if (maxFee <= 5000) binSize = 250; else binSize = 500; }
+      else binSize = parseInt(binSetting);
+      binSize = binSize || 50;
+      var numBins = Math.max(1, Math.ceil(maxFee / binSize) + 1);
+      var binCounts = new Array(numBins).fill(0);
+      var binRows = []; for (var i = 0; i < numBins; i++)binRows.push([]);
+      feeRows.forEach(function (c) { var v = parseFloat((c[feeKey] || '').replace(/[^0-9.]/g, '')); var idx = Math.floor(v / binSize); if (idx < numBins) { binCounts[idx]++; binRows[idx].push(c); } });
+      var labels = binCounts.map(function (_, i) { return i === 0 ? ('$0\u2013$' + binSize) : ('$' + (i * binSize) + '\u2013$' + ((i + 1) * binSize)); });
+      var last = binCounts.length - 1; while (last > 0 && binCounts[last] === 0) last--;
+      var tC = binCounts.slice(0, last + 1), tL = labels.slice(0, last + 1), tR = binRows.slice(0, last + 1);
+      if (naRows.length) { tL.push('N/A'); tC.push(naRows.length); tR.push(naRows); }
+      /* Store for click handler */
+      _feeBinMeta = tR.map(function (rows, i) { return { label: tL[i], rows: rows }; });
+      var barColors = tC.map(function (_, i) { return i === tC.length - 1 && naRows.length ? 'rgba(107,116,148,0.7)' : 'rgba(124,77,255,0.75)'; });
+      var ctx = document.getElementById('chart-fee').getContext('2d');
+      chartInstances['chart-fee'] = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: tL, datasets: [{ label: 'Courses', data: tC, backgroundColor: barColors, borderColor: barColors.map(function (c) { return c.replace(/0\.(75|7)\)/, '1)'); }), borderWidth: 1, borderRadius: 4 }] },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false }, tooltip: { callbacks: { title: function (items) { return tL[items[0].dataIndex]; }, label: function (ctx) { return ' ' + ctx.raw + ' course(s)'; } } }, },
+          scales: { x: { grid: { color: 'var(--chart-grid)' }, ticks: { color: 'var(--chart-label)', maxRotation: 45 } }, y: { grid: { color: 'var(--chart-grid)' }, ticks: { color: 'var(--chart-tick)' }, title: { display: true, text: 'Number of Courses', color: 'var(--chart-tick)' } } },
+          onClick: function (evt, items) {
+            if (!items.length) return;
+            var meta = _feeBinMeta[items[0].index];
+            if (!meta || !meta.rows.length) return;
+            var rowSet = new Set(meta.rows);
+            jumpToTable('Fee range: ' + meta.label + ' (' + meta.rows.length + ' courses)', function (c) { return rowSet.has(c); });
+          }
+        }
+      });
+      document.getElementById('chart-fee').style.cursor = 'pointer';
+    }
+
+    /* Chart 3: Scatter */
+    function renderScatterChart(courses) {
+      destroyChart('chart-scatter');
+      var filtered = filterByMs(courses, 'scatter-provider');
+      var minRev = parseInt(document.getElementById('scatter-min-reviews').value || 0);
+      var minRat = parseFloat(document.getElementById('scatter-min-rating').value || 0);
+      var maxRat = parseFloat(document.getElementById('scatter-max-rating').value || 5);
+      var provs = Array.from(new Set(filtered.map(function (c) { return c['Training Provider'] || 'Unknown'; }))).sort();
+      var pal = provs.map(function (_, i) { return 'hsl(' + ((i * 137) % 360) + ',70%,60%)'; });
+      var pm = {}; provs.forEach(function (p, i) { pm[p] = pal[i]; });
+      var ds = provs.map(function (p) { return { label: truncate(p, 28), data: filtered.filter(function (c) { return (c['Training Provider'] || 'Unknown') === p && c['Star Rating'] != null && (c['No. of Ratings'] || 0) >= minRev && (c['Star Rating'] || 0) >= minRat && (c['Star Rating'] || 0) <= maxRat; }).map(function (c) { return { x: c['Star Rating'], y: c['No. of Ratings'], title: c['Course Title'], provider: p }; }), backgroundColor: pm[p] + 'aa', borderColor: pm[p], pointRadius: 5, pointHoverRadius: 8 }; }).filter(function (d) { return d.data.length > 0; });
+      if (!ds.length) { showChartEmpty('chart-scatter-wrap', 'chart-scatter-empty', 'chart-scatter', false); return; }
+      showChartCanvas('chart-scatter-wrap', 'chart-scatter-empty', 'chart-scatter', false);
+      var ctx = document.getElementById('chart-scatter').getContext('2d');
+      chartInstances['chart-scatter'] = new Chart(ctx, { type: 'scatter', data: { datasets: ds }, options: { responsive: true, plugins: { legend: { display: provs.length <= 12, labels: { font: { size: 10 }, boxWidth: 8, padding: 10 } }, tooltip: { callbacks: { label: function (ctx) { return [truncate(ctx.raw.title || '', 45), 'Rating: ' + ctx.raw.x + ' star  Reviews: ' + ctx.raw.y, 'Provider: ' + truncate(ctx.raw.provider || '', 35)]; } } } }, scales: { x: { title: { display: true, text: 'Star Rating', color: 'var(--chart-tick)' }, min: Math.max(0, minRat - .5), max: 5.2, grid: { color: 'var(--chart-grid)' }, ticks: { color: 'var(--chart-tick)' } }, y: { title: { display: true, text: 'Number of Reviews', color: 'var(--chart-tick)' }, grid: { color: 'var(--chart-grid)' }, ticks: { color: 'var(--chart-tick)' } } } } });
+    }
+
+    /* Chart 4: Top rated */
+    function renderTopratedChart(courses) {
+      destroyChart('chart-toprated');
+      var filtered = filterByMs(courses, 'toprated-provider');
+      var minRev = parseInt(document.getElementById('toprated-min-reviews').value || 5);
+      var topN = parseInt(document.getElementById('toprated-n').value || 10);
+      var sortBy = document.getElementById('toprated-sort').value || 'rating';
+      var eligible = filtered.filter(function (c) { return c['Star Rating'] != null && (c['No. of Ratings'] || 0) >= minRev; }).sort(function (a, b) { return sortBy === 'reviews' ? (b['No. of Ratings'] - a['No. of Ratings']) : ((b['Star Rating'] - a['Star Rating']) || (b['No. of Ratings'] - a['No. of Ratings'])); }).slice(0, topN);
+      if (!eligible.length) { showChartEmpty('chart-toprated-wrap', 'chart-toprated-empty', 'chart-toprated', true); return; }
+      showChartCanvas('chart-toprated-wrap', 'chart-toprated-empty', 'chart-toprated', true);
+      var labels = eligible.map(function (c) { return truncate(c['Course Title'] || '--', 36); });
+      var ratings = eligible.map(function (c) { return c['Star Rating']; });
+      var reviews = eligible.map(function (c) { return c['No. of Ratings'] || 0; });
+      var colors = ratings.map(function (r) { return r >= 4.5 ? '#00e5ff' : r >= 4 ? '#7c4dff' : '#ff6b35'; });
+      var h = Math.max(260, eligible.length * 30); document.getElementById('chart-toprated-container').style.height = h + 'px';
+      var ctx = document.getElementById('chart-toprated').getContext('2d');
+      chartInstances['chart-toprated'] = new Chart(ctx, { type: 'bar', data: { labels: labels, datasets: [{ label: 'Star Rating', data: ratings, backgroundColor: colors, borderRadius: 5, borderSkipped: false }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { title: function (items) { return eligible[items[0].dataIndex] ? eligible[items[0].dataIndex]['Course Title'] : ''; }, label: function (ctx) { return [' Rating: ' + ctx.raw + ' star', ' Reviews: ' + reviews[ctx.dataIndex], ' Provider: ' + truncate((eligible[ctx.dataIndex] ? eligible[ctx.dataIndex]['Training Provider'] : '') || '--', 40)]; } } } }, scales: { x: { min: 0, max: 5, grid: { color: 'var(--chart-grid)' }, ticks: { color: 'var(--chart-tick)' } }, y: { grid: { display: false }, ticks: { color: 'var(--chart-label)', font: { size: 11 } } } } } });
+    }
+
+    /* Chart 5: Fee vs Rating scatter */
+    function renderFeeRatingChart(courses) {
+      destroyChart('chart-feerating');
+      var filtered = filterByMs(courses, 'feerating-provider');
+      var feeType = document.getElementById('feerating-fee-type').value || 'full';
+      var feeKey = feeType === 'full' ? 'Full Course Fee' : 'After SkillsFuture Funding';
+      var minRev = parseInt(document.getElementById('feerating-min-reviews').value || 1);
+      var maxFL = parseFloat(document.getElementById('feerating-max-fee').value) || Infinity;
+      var provs = Array.from(new Set(filtered.map(function (c) { return c['Training Provider'] || 'Unknown'; }))).sort();
+      var pal = provs.map(function (_, i) { return 'hsl(' + ((i * 113) % 360) + ',65%,58%)'; });
+      var pm = {}; provs.forEach(function (p, i) { pm[p] = pal[i]; });
+      var ds = provs.map(function (p) { var pts = filtered.filter(function (c) { var fee = parseFloat((c[feeKey] || '').replace(/[^0-9.]/g, '')); return (c['Training Provider'] || 'Unknown') === p && !isNaN(fee) && fee >= 0 && fee <= maxFL && c['Star Rating'] != null && (c['No. of Ratings'] || 0) >= minRev; }).map(function (c) { return { x: parseFloat((c[feeKey] || '').replace(/[^0-9.]/g, '')), y: c['Star Rating'], title: c['Course Title'], reviews: c['No. of Ratings'] || 0, provider: p }; }); return { label: truncate(p, 28), data: pts, backgroundColor: pm[p] + 'aa', borderColor: pm[p], pointRadius: 5, pointHoverRadius: 8 }; }).filter(function (d) { return d.data.length > 0; });
+      if (!ds.length) { showChartEmpty('chart-feerating-wrap', 'chart-feerating-empty', 'chart-feerating', false); return; }
+      showChartCanvas('chart-feerating-wrap', 'chart-feerating-empty', 'chart-feerating', false);
+      var ctx = document.getElementById('chart-feerating').getContext('2d');
+      chartInstances['chart-feerating'] = new Chart(ctx, { type: 'scatter', data: { datasets: ds }, options: { responsive: true, plugins: { legend: { display: provs.length <= 12, labels: { font: { size: 10 }, boxWidth: 8, padding: 10 } }, tooltip: { callbacks: { label: function (ctx) { return [truncate(ctx.raw.title || '', 45), 'Fee: $' + ctx.raw.x.toLocaleString() + '  Rating: ' + ctx.raw.y + ' star', 'Reviews: ' + ctx.raw.reviews + '  |  ' + truncate(ctx.raw.provider || '', 30)]; } } } }, scales: { x: { title: { display: true, text: 'Course Fee (SGD)', color: 'var(--chart-tick)' }, grid: { color: 'var(--chart-grid)' }, ticks: { color: 'var(--chart-tick)', callback: function (v) { return '$' + v.toLocaleString(); } } }, y: { title: { display: true, text: 'Star Rating', color: 'var(--chart-tick)' }, min: 0, max: 5.2, grid: { color: 'var(--chart-grid)' }, ticks: { color: 'var(--chart-tick)' } } } } });
+    }
+
+    /* ══ TABLE ══════════════════════════════════════════════════ */
+    function applyTableFilters() {
+      var q = (document.getElementById('table-search').value || '').toLowerCase();
+      var prov = document.getElementById('table-provider-filter').value || '';
+      var sortVal = document.getElementById('table-sort').value || '';
+      var rows = _tableData.filter(function (c) {
+        if (_chartFilter && !_chartFilter.fn(c)) return false;
+        var mQ = !q || (c['Course Title'] || '').toLowerCase().indexOf(q) >= 0 || (c['Training Provider'] || '').toLowerCase().indexOf(q) >= 0;
+        var mP = !prov || (c['Training Provider'] || '') === prov;
+        return mQ && mP;
+      });
+      if (sortVal === 'rating-desc') rows.sort(function (a, b) { return (b['Star Rating'] || 0) - (a['Star Rating'] || 0); });
+      else if (sortVal === 'rating-asc') rows.sort(function (a, b) { return (a['Star Rating'] || 0) - (b['Star Rating'] || 0); });
+      else if (sortVal === 'fee-asc') rows.sort(function (a, b) { return parseFee(a['Full Course Fee']) - parseFee(b['Full Course Fee']); });
+      else if (sortVal === 'fee-desc') rows.sort(function (a, b) { return parseFee(b['Full Course Fee']) - parseFee(a['Full Course Fee']); });
+      else if (sortVal === 'reviews-desc') rows.sort(function (a, b) { return (b['No. of Ratings'] || 0) - (a['No. of Ratings'] || 0); });
+      _tableFiltered = rows;
+      var totalPages = Math.max(1, Math.ceil(rows.length / _tablePageSize));
+      if (_tablePage > totalPages) _tablePage = 1;
+      renderTablePage();
+    }
+
+    function renderTablePage() {
+      var rows = _tableFiltered;
+      var total = rows.length;
+      var totalPages = Math.max(1, Math.ceil(total / _tablePageSize));
+      var start = (_tablePage - 1) * _tablePageSize;
+      var page = rows.slice(start, start + _tablePageSize);
+      var stars = function (n) { return n ? ('&#9733;'.repeat(Math.floor(n)) + (n % 1 ? '&#189;' : '')) : '&mdash;'; };
+      var shown = total === 0 ? 0 : start + 1;
+      document.getElementById('table-info').textContent = 'Showing ' + shown + '\u2013' + Math.min(start + _tablePageSize, total) + ' of ' + total + ' course(s)';
+      document.getElementById('data-tbody').innerHTML = page.map(function (c, i) {
+        return '<tr>'
+          + '<td style="color:var(--muted);font-family:\'Space Mono\',monospace;font-size:12px;">' + (start + i + 1) + '</td>'
+          + '<td><a href="' + escHtml(c['Course URL'] || '#') + '" target="_blank">' + escHtml(c['Course Title'] || '--') + '</a></td>'
+          + '<td>' + escHtml(c['Training Provider'] || '--') + '</td>'
+          + '<td style="font-family:\'Space Mono\',monospace;font-size:12px;white-space:nowrap;">' + escHtml(c['Full Course Fee'] || 'N/A') + '</td>'
+          + '<td style="font-family:\'Space Mono\',monospace;font-size:12px;color:var(--success);white-space:nowrap;">' + escHtml(c['After SkillsFuture Funding'] || 'N/A') + '</td>'
+          + '<td class="stars">' + stars(c['Star Rating']) + '</td>'
+          + '<td style="color:var(--muted);font-family:\'Space Mono\',monospace;font-size:12px;">' + (c['No. of Ratings'] || 0) + '</td>'
+          + '<td style="font-size:12px;color:var(--muted);">' + escHtml(c['Upcoming Course Date'] || '--') + '</td>'
+          + '</tr>';
+      }).join('') || '<tr><td colspan="8" class="no-data">No matching results</td></tr>';
+      renderPagination(totalPages);
+    }
+
+    function renderPagination(totalPages) {
+      var el = document.getElementById('table-pagination');
+      if (totalPages <= 1) { el.innerHTML = ''; return; }
+      var cur = _tablePage, html = '';
+      html += '<button class="page-btn" onclick="gotoPage(' + (cur - 1) + ')" ' + (cur === 1 ? 'disabled' : '') + '>&#8249;</button>';
+      for (var i = 1; i <= totalPages; i++) {
+        if (totalPages > 8 && i > 2 && i < totalPages - 1 && Math.abs(i - cur) > 1) { if (i === 3 || i === totalPages - 2) html += '<span class="page-info">&hellip;</span>'; continue; }
+        html += '<button class="page-btn' + (i === cur ? ' active' : '') + '" onclick="gotoPage(' + i + ')">' + i + '</button>';
+      }
+      html += '<button class="page-btn" onclick="gotoPage(' + (cur + 1) + ')" ' + (cur === totalPages ? 'disabled' : '') + '>&#8250;</button>';
+      html += '<span class="page-info">Page ' + cur + ' of ' + totalPages + '</span>';
+      el.innerHTML = html;
+    }
+    function gotoPage(p) { _tablePage = p; renderTablePage(); }
+
+    /* ══ EXPORT ═════════════════════════════════════════════════ */
+    function exportChart(canvasId, fmt) {
+      var canvas = document.getElementById(canvasId); if (!canvas) return;
+      var tmp = document.createElement('canvas'); tmp.width = canvas.width; tmp.height = canvas.height;
+      var tc = tmp.getContext('2d');
+      var bg = document.documentElement.getAttribute('data-theme') === 'dark' ? '#0d0f14' : '#f0f4f8';
+      tc.fillStyle = fmt === 'jpg' ? bg : 'transparent';
+      tc.fillRect(0, 0, tmp.width, tmp.height); tc.drawImage(canvas, 0, 0);
+      var a = document.createElement('a'); a.download = canvasId + '_' + (activeKeyword || 'chart') + '.' + fmt; a.href = tmp.toDataURL(fmt === 'jpg' ? 'image/jpeg' : 'image/png', .95); a.click();
+    }
+    function exportExcel() { if (!activeKeyword) return; window.location.href = '/api/export/' + encodeURIComponent(activeKeyword); }
+
+    /* ══ UTILS ══════════════════════════════════════════════════ */
+    function parseFee(s) { var v = parseFloat((s || '').replace(/[^0-9.]/g, '')); return isNaN(v) ? Infinity : v; }
+    function showError(msg) { var el = document.getElementById('scrape-error'); el.textContent = msg; el.style.display = 'block'; }
+    function hideError() { document.getElementById('scrape-error').style.display = 'none'; }
+    function escHtml(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function truncate(s, n) { s = String(s || ''); return s.length > n ? s.slice(0, n) + '\u2026' : s; }
+
+    /* ══ INIT ═══════════════════════════════════════════════════ */
+    applyChartDefaults();
+    document.getElementById('keyword-input').addEventListener('keydown', function (e) { if (e.key === 'Enter') handleScrapeClick(); });
+  </script>
 </body>
+
 </html>
