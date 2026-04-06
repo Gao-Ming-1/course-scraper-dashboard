@@ -216,7 +216,15 @@ async def _run_scraper(job_id: str, keyword: str, max_pages: int, mode: str):
 
     try:
         async with async_playwright() as pw:
-            browser = await pw.chromium.launch(headless=True)
+            browser = await pw.chromium.launch(
+                headless=True,
+                args=[
+                    "--no-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu",
+                    "--single-process"  # helps on low-memory environments
+                ]
+            )
             context = await browser.new_context(
                 user_agent=(
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
