@@ -7,7 +7,8 @@ pip install -r requirements.txt
 echo "==> Installing Playwright Chromium browser..."
 playwright install chromium
 
-echo "==> Installing Chromium system dependencies..."
-playwright install-deps chromium
+echo "==> Installing Chromium OS-level dependencies..."
+# playwright install-deps needs root; on Render it runs as root during build
+playwright install-deps chromium || true
 
 echo "==> Build complete."
