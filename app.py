@@ -167,7 +167,7 @@ SEARCH_BASE = (
 async def _scrape_page(page, import_playwright_page) -> list[dict]:
     """Extract all course cards from the currently visible page."""
     await import_playwright_page.wait_for_selector(
-        "div.card", timeout=30_000, state="attached"
+        "div.card", timeout=60_000, state="attached"
     )
     await asyncio.sleep(1.5)
     courses = await import_playwright_page.evaluate("""
@@ -251,7 +251,18 @@ async def _run_scraper(job_id: str, keyword: str, max_pages: int, mode: str):
 
     try:
         async with async_playwright() as pw:
-            browser = await pw.chromium.launch(headless=True)
+            browser = await pw.chromium.launch(
+                headless=True,
+                args=[
+                    "--no-sandbox",
+                    "--disable-setuid-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu",
+                    "--no-first-run",
+                    "--no-zygote",
+                    "--single-process",
+                ]
+            )
             context = await browser.new_context(
                 user_agent=(
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -263,8 +274,16 @@ async def _run_scraper(job_id: str, keyword: str, max_pages: int, mode: str):
             page = await context.new_page()
 
             _set("message", f"Opening MySkillsFuture for '{keyword}'…")
-            await page.goto(url, wait_until="networkidle", timeout=90_000)
-            await asyncio.sleep(3)
+            await page.goto(url, wait_until="domcontentloaded", timeout=120_000)
+            await asyncio.sleep(5)  # give JS time to render after DOM loads
+
+            _set("message", f"Opening MySkillsFuture for '{keyword}'…")
+            await page.goto(url, wait_until="domcontentloaded", timeout=120_000)
+            await asyncio.sleep(5)
+
+            # Debug: log page title to see if it loaded
+            title = await page.title()
+            _set("message", f"Page loaded: {title[:60]}")
 
             for page_num in range(1, max_pages + 1):
                 _set("pages_done", page_num - 1)
