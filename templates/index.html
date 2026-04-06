@@ -1838,11 +1838,38 @@
     function subscribeProgress(jobId) {
       if (currentSSE) currentSSE.close();
       currentSSE = new EventSource('/api/scrape/progress/' + jobId);
+
       currentSSE.onmessage = function (e) {
         var d = JSON.parse(e.data); updateProgress(d);
-        if (['completed', 'error', 'no_results'].indexOf(d.status) >= 0) { currentSSE.close(); document.getElementById('scrape-btn').disabled = false; if (d.status === 'completed') { loadKeywordData(activeKeyword); } }
+        if (['completed', 'error', 'no_results'].indexOf(d.status) >= 0) {
+          currentSSE.close();
+          document.getElementById('scrape-btn').disabled = false;
+          if (d.status === 'completed') { loadKeywordData(activeKeyword); }
+        }
       };
-      currentSSE.onerror = function () { updateProgress({ status: 'error', message: 'Connection lost.', pages_done: 0, total: 0, count: 0, warnings: [], error: 'SSE disconnected' }); currentSSE.close(); document.getElementById('scrape-btn').disabled = false; };
+
+      // Replace the onerror with a reconnecting version
+      currentSSE.onerror = function () {
+        currentSSE.close();
+        // Check if job is still running before giving up
+        fetch('/api/scrape/progress-check/' + jobId)
+          .then(function (r) { return r.json(); })
+          .then(function (d) {
+            if (['completed', 'error', 'no_results'].indexOf(d.status) >= 0) {
+              updateProgress(d);
+              document.getElementById('scrape-btn').disabled = false;
+              if (d.status === 'completed') { loadKeywordData(activeKeyword); }
+            } else {
+              // Job still running, reconnect after 2 seconds
+              setTimeout(function () { subscribeProgress(jobId); }, 2000);
+            }
+          })
+          .catch(function () {
+            // Can't reach server at all
+            updateProgress({ status: 'error', message: 'Connection lost.', pages_done: 0, total: 0, count: 0, warnings: [], error: 'SSE disconnected' });
+            document.getElementById('scrape-btn').disabled = false;
+          });
+      };
     }
     function updateProgress(d) {
       var sa = d.scrape_all, pct = sa ? 100 : (d.total > 0 ? Math.round(d.pages_done / d.total * 100) : 0);
