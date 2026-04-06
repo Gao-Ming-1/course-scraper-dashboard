@@ -632,6 +632,65 @@
     }
 
     /* ── HISTORY ──────────────────────────────────────── */
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: border-color .15s, background .25s
+    }
+
+    .history-item:hover {
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 6%, var(--bg))
+    }
+
+    .history-kw {
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      flex: 1;
+      color: var(--text)
+    }
+
+    .history-meta {
+      font-size: 12px;
+      color: var(--muted)
+    }
+
+    .history-count {
+      font-size: 12px;
+      font-family: 'Space Mono', monospace;
+      color: var(--accent2);
+      margin-left: auto;
+      font-weight: 700
+    }
+
+    .history-del {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 3px 7px;
+      border-radius: 4px;
+      font-size: 15px;
+      transition: color .15s
+    }
+
+    .history-del:hover {
+      color: var(--danger)
+    }
+
     .empty-state {
       text-align: center;
       padding: 32px;
@@ -1169,7 +1228,8 @@
           </div>
           <span class="theme-label" id="theme-label">Dark Mode</span>
         </div>
-        <div class="header-meta">Data source: <strong>MySkillsFuture.gov.sg</strong></div>
+        <div class="header-meta">Data source: <strong>MySkillsFuture.gov.sg</strong><br>Last updated: <span
+            id="hdr-time">&mdash;</span></div>
       </div>
     </header>
 
@@ -1269,6 +1329,7 @@
         </div>
 
 
+
       </div><!-- /left -->
 
       <!-- ══ RIGHT ════════════════════════════════════════ -->
@@ -1353,7 +1414,8 @@
                       Provider(s)</label>
                     <div class="multiselect-wrap" id="fee-provider-wrap">
                       <div class="multiselect-trigger" id="fee-provider-trigger" onclick="toggleMs('fee-provider')">
-                        <span id="fee-provider-label">All Providers</span><span class="ms-arrow">&#9662;</span></div>
+                        <span id="fee-provider-label">All Providers</span><span class="ms-arrow">&#9662;</span>
+                      </div>
                       <div class="multiselect-dropdown" id="fee-provider-dropdown" style="display:none;">
                         <div class="ms-search-wrap"><input type="text" class="ms-search" placeholder="Search..."
                             oninput="filterMsOpts('fee-provider',this.value)"></div>
@@ -1605,6 +1667,15 @@
     var _chartFilter = null; // {label, fn(course)->bool}
     var _feeBinMeta = [];    // populated by renderFeeChart for click handler
 
+    function getChartColors() {
+      var s = getComputedStyle(document.documentElement);
+      return {
+        grid: s.getPropertyValue('--chart-grid').trim(),
+        tick: s.getPropertyValue('--chart-tick').trim(),
+        label: s.getPropertyValue('--chart-label').trim()
+      };
+    }
+
     /* ══ THEME ══════════════════════════════════════════════════ */
     function toggleTheme() {
       var html = document.documentElement;
@@ -1846,13 +1917,14 @@
       var h = Math.max(280, entries.length * 28);
       document.getElementById('chart-provider-container').style.height = h + 'px';
       var ctx = document.getElementById('chart-provider').getContext('2d');
+      var theme = getChartColors();
       chartInstances['chart-provider'] = new Chart(ctx, {
         type: 'bar',
         data: { labels: labels, datasets: [{ label: 'Courses', data: data, backgroundColor: palette, borderRadius: 5, borderSkipped: false }] },
         options: {
           indexAxis: 'y', responsive: true, maintainAspectRatio: false,
           plugins: { legend: { display: false }, tooltip: { callbacks: { title: function (items) { return entries[items[0].dataIndex] ? entries[items[0].dataIndex][0] : ''; }, label: function (ctx) { return ' ' + ctx.raw + ' course(s)'; } } }, },
-          scales: { x: { grid: { color: 'var(--chart-grid)' }, ticks: { color: 'var(--chart-tick)' } }, y: { grid: { display: false }, ticks: { color: 'var(--chart-label)', font: { size: 11 } } } },
+          scales: { x: { grid: { color: theme.grid }, ticks: { color: theme.label } }, y: { grid: { display: false }, ticks: { color: theme.label, font: { size: 11 } } } },
           onClick: function (evt, items) {
             if (!items.length) return;
             var provName = entries[items[0].index][0];
@@ -1896,13 +1968,14 @@
       _feeBinMeta = tR.map(function (rows, i) { return { label: tL[i], rows: rows }; });
       var barColors = tC.map(function (_, i) { return i === tC.length - 1 && naRows.length ? 'rgba(107,116,148,0.7)' : 'rgba(124,77,255,0.75)'; });
       var ctx = document.getElementById('chart-fee').getContext('2d');
+      var theme = getChartColors();
       chartInstances['chart-fee'] = new Chart(ctx, {
         type: 'bar',
         data: { labels: tL, datasets: [{ label: 'Courses', data: tC, backgroundColor: barColors, borderColor: barColors.map(function (c) { return c.replace(/0\.(75|7)\)/, '1)'); }), borderWidth: 1, borderRadius: 4 }] },
         options: {
           responsive: true,
           plugins: { legend: { display: false }, tooltip: { callbacks: { title: function (items) { return tL[items[0].dataIndex]; }, label: function (ctx) { return ' ' + ctx.raw + ' course(s)'; } } }, },
-          scales: { x: { grid: { color: 'var(--chart-grid)' }, ticks: { color: 'var(--chart-label)', maxRotation: 45 } }, y: { grid: { color: 'var(--chart-grid)' }, ticks: { color: 'var(--chart-tick)' }, title: { display: true, text: 'Number of Courses', color: 'var(--chart-tick)' } } },
+          scales: { x: { grid: { color: theme.grid }, ticks: { color: theme.tick, maxRotation: 45 } }, y: { grid: { color: theme.grid }, ticks: { color: theme.label }, title: { display: true, text: 'Number of Courses', color: theme.tick } } },
           onClick: function (evt, items) {
             if (!items.length) return;
             var meta = _feeBinMeta[items[0].index];
@@ -1929,7 +2002,8 @@
       if (!ds.length) { showChartEmpty('chart-scatter-wrap', 'chart-scatter-empty', 'chart-scatter', false); return; }
       showChartCanvas('chart-scatter-wrap', 'chart-scatter-empty', 'chart-scatter', false);
       var ctx = document.getElementById('chart-scatter').getContext('2d');
-      chartInstances['chart-scatter'] = new Chart(ctx, { type: 'scatter', data: { datasets: ds }, options: { responsive: true, plugins: { legend: { display: provs.length <= 12, labels: { font: { size: 10 }, boxWidth: 8, padding: 10 } }, tooltip: { callbacks: { label: function (ctx) { return [truncate(ctx.raw.title || '', 45), 'Rating: ' + ctx.raw.x + ' star  Reviews: ' + ctx.raw.y, 'Provider: ' + truncate(ctx.raw.provider || '', 35)]; } } } }, scales: { x: { title: { display: true, text: 'Star Rating', color: 'var(--chart-tick)' }, min: Math.max(0, minRat - .5), max: 5.2, grid: { color: 'var(--chart-grid)' }, ticks: { color: 'var(--chart-tick)' } }, y: { title: { display: true, text: 'Number of Reviews', color: 'var(--chart-tick)' }, grid: { color: 'var(--chart-grid)' }, ticks: { color: 'var(--chart-tick)' } } } } });
+      var theme = getChartColors();
+      chartInstances['chart-scatter'] = new Chart(ctx, { type: 'scatter', data: { datasets: ds }, options: { responsive: true, plugins: { legend: { display: provs.length <= 12, labels: { font: { size: 10 }, boxWidth: 8, padding: 10 } }, tooltip: { callbacks: { label: function (ctx) { return [truncate(ctx.raw.title || '', 45), 'Rating: ' + ctx.raw.x + ' star  Reviews: ' + ctx.raw.y, 'Provider: ' + truncate(ctx.raw.provider || '', 35)]; } } } }, scales: { x: { title: { display: true, text: 'Star Rating', color: theme.tick }, min: Math.max(0, minRat - .5), max: 5.2, grid: { color: theme.grid }, ticks: { color: theme.label } }, y: { title: { display: true, text: 'Number of Reviews', color: theme.tick }, grid: { color: theme.grid }, ticks: { color: theme.label } } } } });
     }
 
     /* Chart 4: Top rated */
@@ -1948,7 +2022,8 @@
       var colors = ratings.map(function (r) { return r >= 4.5 ? '#00e5ff' : r >= 4 ? '#7c4dff' : '#ff6b35'; });
       var h = Math.max(260, eligible.length * 30); document.getElementById('chart-toprated-container').style.height = h + 'px';
       var ctx = document.getElementById('chart-toprated').getContext('2d');
-      chartInstances['chart-toprated'] = new Chart(ctx, { type: 'bar', data: { labels: labels, datasets: [{ label: 'Star Rating', data: ratings, backgroundColor: colors, borderRadius: 5, borderSkipped: false }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { title: function (items) { return eligible[items[0].dataIndex] ? eligible[items[0].dataIndex]['Course Title'] : ''; }, label: function (ctx) { return [' Rating: ' + ctx.raw + ' star', ' Reviews: ' + reviews[ctx.dataIndex], ' Provider: ' + truncate((eligible[ctx.dataIndex] ? eligible[ctx.dataIndex]['Training Provider'] : '') || '--', 40)]; } } } }, scales: { x: { min: 0, max: 5, grid: { color: 'var(--chart-grid)' }, ticks: { color: 'var(--chart-tick)' } }, y: { grid: { display: false }, ticks: { color: 'var(--chart-label)', font: { size: 11 } } } } } });
+      var theme = getChartColors();
+      chartInstances['chart-toprated'] = new Chart(ctx, { type: 'bar', data: { labels: labels, datasets: [{ label: 'Star Rating', data: ratings, backgroundColor: colors, borderRadius: 5, borderSkipped: false }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { title: function (items) { return eligible[items[0].dataIndex] ? eligible[items[0].dataIndex]['Course Title'] : ''; }, label: function (ctx) { return [' Rating: ' + ctx.raw + ' star', ' Reviews: ' + reviews[ctx.dataIndex], ' Provider: ' + truncate((eligible[ctx.dataIndex] ? eligible[ctx.dataIndex]['Training Provider'] : '') || '--', 40)]; } } } }, scales: { x: { min: 0, max: 5, grid: { color: theme.grid }, ticks: { color: theme.label } }, y: { grid: { display: false }, ticks: { color: theme.label, font: { size: 11 } } } } } });
     }
 
     /* Chart 5: Fee vs Rating scatter */
@@ -1966,7 +2041,8 @@
       if (!ds.length) { showChartEmpty('chart-feerating-wrap', 'chart-feerating-empty', 'chart-feerating', false); return; }
       showChartCanvas('chart-feerating-wrap', 'chart-feerating-empty', 'chart-feerating', false);
       var ctx = document.getElementById('chart-feerating').getContext('2d');
-      chartInstances['chart-feerating'] = new Chart(ctx, { type: 'scatter', data: { datasets: ds }, options: { responsive: true, plugins: { legend: { display: provs.length <= 12, labels: { font: { size: 10 }, boxWidth: 8, padding: 10 } }, tooltip: { callbacks: { label: function (ctx) { return [truncate(ctx.raw.title || '', 45), 'Fee: $' + ctx.raw.x.toLocaleString() + '  Rating: ' + ctx.raw.y + ' star', 'Reviews: ' + ctx.raw.reviews + '  |  ' + truncate(ctx.raw.provider || '', 30)]; } } } }, scales: { x: { title: { display: true, text: 'Course Fee (SGD)', color: 'var(--chart-tick)' }, grid: { color: 'var(--chart-grid)' }, ticks: { color: 'var(--chart-tick)', callback: function (v) { return '$' + v.toLocaleString(); } } }, y: { title: { display: true, text: 'Star Rating', color: 'var(--chart-tick)' }, min: 0, max: 5.2, grid: { color: 'var(--chart-grid)' }, ticks: { color: 'var(--chart-tick)' } } } } });
+      var theme = getChartColors();
+      chartInstances['chart-feerating'] = new Chart(ctx, { type: 'scatter', data: { datasets: ds }, options: { responsive: true, plugins: { legend: { display: provs.length <= 12, labels: { font: { size: 10 }, boxWidth: 8, padding: 10 } }, tooltip: { callbacks: { label: function (ctx) { return [truncate(ctx.raw.title || '', 45), 'Fee: $' + ctx.raw.x.toLocaleString() + '  Rating: ' + ctx.raw.y + ' star', 'Reviews: ' + ctx.raw.reviews + '  |  ' + truncate(ctx.raw.provider || '', 30)]; } } } }, scales: { x: { title: { display: true, text: 'Course Fee (SGD)', color: theme.tick }, grid: { color: theme.grid }, ticks: { color: theme.label, callback: function (v) { return '$' + v.toLocaleString(); } } }, y: { title: { display: true, text: 'Star Rating', color: theme.tick }, min: 0, max: 5.2, grid: { color: theme.grid }, ticks: { color: theme.label } } } } });
     }
 
     /* ══ TABLE ══════════════════════════════════════════════════ */
