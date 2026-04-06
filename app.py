@@ -406,6 +406,7 @@ def api_scrape_start():
 def api_scrape_progress(job_id):
     """Server-Sent Events stream — pushes job state every second."""
     def generate():
+        last_ping = time.time()
         while True:
             with JOBS_LOCK:
                 job = JOBS.get(job_id)
@@ -425,11 +426,18 @@ def api_scrape_progress(job_id):
             yield f"data: {json.dumps(payload)}\n\n"
             if job["status"] in ("completed", "error", "no_results"):
                 break
+            # Send a comment ping every 15s to prevent proxy timeout
+            if time.time() - last_ping > 15:
+                yield ": ping\n\n"
+                last_ping = time.time()
             time.sleep(1)
 
-    return Response(generate(), mimetype="text/event-stream",
-                    headers={"Cache-Control": "no-cache",
-                             "X-Accel-Buffering": "no"})
+    resp = Response(generate(), mimetype="text/event-stream")
+    resp.headers["Cache-Control"] = "no-cache, no-transform"
+    resp.headers["X-Accel-Buffering"] = "no"
+    resp.headers["X-Content-Type-Options"] = "nosniff"
+    resp.headers["Connection"] = "keep-alive"
+    return resp
 
 
 @app.route("/api/export/<keyword>")
@@ -443,6 +451,25 @@ def api_export(keyword):
         as_attachment=True,
         download_name=f"skillsfuture_{keyword_to_filename(keyword)}.xlsx",
     )
+
+
+@app.route("/api/scrape/progress-check/<job_id>")
+def api_scrape_progress_check(job_id):
+    """Single-shot status check — used by frontend reconnect logic."""
+    with JOBS_LOCK:
+        job = JOBS.get(job_id)
+    if not job:
+        return jsonify({"status": "error", "error": "Job not found"})
+    return jsonify({
+        "status":     job["status"],
+        "pages_done": job["pages_done"],
+        "total":      job["total_pages"],
+        "scrape_all": job.get("scrape_all", False),
+        "message":    job["message"],
+        "count":      len(job.get("courses", [])),
+        "warnings":   job.get("warnings", []),
+        "error":      job.get("error"),
+    })
 
 
 
