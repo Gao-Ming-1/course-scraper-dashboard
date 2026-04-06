@@ -1,9 +1,9 @@
 services:
   - type: web
     name: skillsfuture-dashboard
-    runtime: python
-    buildCommand: "./build.sh"
-    startCommand: "gunicorn app:app --workers 1 --threads 4 --timeout 120 --bind 0.0.0.0:$PORT"
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.0
+      - key: PORT
+        value: 10000
